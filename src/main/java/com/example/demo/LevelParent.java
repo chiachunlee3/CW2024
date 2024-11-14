@@ -183,7 +183,7 @@ public abstract class LevelParent {
             List<ActiveActorDestructible> actors2) {
         for (ActiveActorDestructible actor : actors2) {
             for (ActiveActorDestructible otherActor : actors1) {
-                if (actor.getBoundsInParent().intersects(otherActor.getBoundsInParent())) {
+                if (actor.getPreciseBounds().intersects(otherActor.getPreciseBounds())) {
                     actor.takeDamage();
                     otherActor.takeDamage();
                 }

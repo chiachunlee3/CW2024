@@ -26,3 +26,7 @@ When I beat level 1, the game freeze when switching to level 2, sometimes the ga
 
 ## Missing requires transitive
 A warning in both controller file and main file which are related to the type Stage from the module javafx.graphics which indicated it cannot be access by the client due to missing requires transitive. Added a line in module-info.java file to fix this warning.
+
+# Refactoring
+## Reduced the hitbox of enemy
+Make the hitbox of enemy smaller so that the projectile need to actually hit the enemy plane to count as a hit. In ActiveActor class, made a function to get the precise bound of the image of the enemy plane.
