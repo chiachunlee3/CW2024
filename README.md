@@ -30,3 +30,6 @@ A warning in both controller file and main file which are related to the type St
 # Refactoring
 ## Reduced the hitbox of enemy
 Make the hitbox of enemy smaller so that the projectile need to actually hit the enemy plane to count as a hit. In ActiveActor class, made a function to get the precise bound of the image of the enemy plane.
+
+## Rearrange the Game Over Screen layout
+Make the game over layout image fit into the screen, by adjusting the image width and height, moved the game over image so that it's centered on the screen. This helps to make the game over screen more visible and readable.
