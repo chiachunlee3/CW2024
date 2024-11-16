@@ -33,3 +33,6 @@ Make the hitbox of enemy smaller so that the projectile need to actually hit the
 
 ## Rearrange the Game Over Screen layout
 Make the game over layout image fit into the screen, by adjusting the image width and height, moved the game over image so that it's centered on the screen. This helps to make the game over screen more visible and readable.
+
+## Removed Irrelevant command
+Removed a line of command in ActiveActor class where the command I removed look like a commented out version that tries to load the image directly from a path string, where in the next line of code included the proper way to load resources. Removed a line of command in GameOverImage class where the command I removed is redundant and not being utilized in the code at all. 
