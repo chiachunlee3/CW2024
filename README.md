@@ -11,6 +11,9 @@ Warning fixes in ShieldImage class where the string IMAGE_NAME is created but no
 
 
 # Additional Java Class
+## Main Menu class
+Added a new class for main menu, where the game doesn't start straight away on level one it start on the main menu, player can choose to play the game or exit it.
+
 
 # Modified Java Class
 ## Observable type is deprecated
