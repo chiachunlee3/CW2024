@@ -66,4 +66,14 @@ public class Controller {
         alert.setContentText(e.getMessage());
         alert.show();
     }
+    
+    private boolean isPaused = false;
+
+    public void togglePause() {
+        isPaused = !isPaused;
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
 }
