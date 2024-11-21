@@ -116,5 +116,7 @@ public class Boss extends FighterPlane {
 		isShielded = false;
 		framesWithShieldActivated = 0;
 	}
-
+	public int getHealth() {
+	    return super.getHealth();
+	}
 }

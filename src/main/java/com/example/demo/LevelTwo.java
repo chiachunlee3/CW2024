@@ -39,5 +39,10 @@ public class LevelTwo extends LevelParent {
 		levelView = new LevelViewLevelTwo(getRoot(), PLAYER_INITIAL_HEALTH);
 		return levelView;
 	}
-
+	
+	@Override
+	protected void updateScene() {
+	    super.updateScene();
+	    levelView.updateBossHealth(boss.getHealth());
+	}
 }

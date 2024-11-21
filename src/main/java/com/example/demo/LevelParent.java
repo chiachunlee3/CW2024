@@ -92,7 +92,7 @@ public abstract class LevelParent {
         }
     }
 
-    private void updateScene() {
+    protected void updateScene() {
     	if (isPaused) return;
         spawnEnemyUnits();
         updateActors();
@@ -211,6 +211,9 @@ public abstract class LevelParent {
 
     private void updateLevelView() {
         levelView.removeHearts(user.getHealth());
+        int killsToAdvance = LevelOne.getKillsToAdvance();
+        int killsRemaining = killsToAdvance - user.getNumberOfKills();
+        levelView.updateKillsRemaining(Math.max(0, killsRemaining));
     }
 
     private void updateKillCount() {
@@ -286,5 +289,6 @@ public abstract class LevelParent {
     public boolean isPaused() {
         return isPaused;
     }
+    
 }
 

@@ -43,3 +43,6 @@ Removed a line of command in ActiveActor class where the command I removed look 
 # Addition
 ## Added pause function
 When in the game screen, player can pause the game by pressing the button 'p', the game will pause and the background would be blurred and the text "Game Paused" will appear on screen. 
+
+## Display kill needed to advance/win 
+Added a text that display the current kill needed to advance/win the game, it will update everytime an enemy was hit and it will display the amount of enemy needed to be killed before advancing to the next level.
