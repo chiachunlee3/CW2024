@@ -6,21 +6,25 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
+import javafx.scene.control.Button;
+import com.example.demo.controller.Controller;
+
 
 public class LevelView {
 
     private static final double HEART_DISPLAY_X_POSITION = 5;
     private static final double HEART_DISPLAY_Y_POSITION = 25;
     private static final int WIN_IMAGE_X_POSITION = 355;
-    private static final int WIN_IMAGE_Y_POSITION = 175;
-    private static final double GAME_OVER_IMAGE_WIDTH = 1000;
-    private static final double GAME_OVER_IMAGE_HEIGHT = 850;
+    private static final int WIN_IMAGE_Y_POSITION = 100;
+    private static final double GAME_OVER_IMAGE_WIDTH = 700;
+    private static final double GAME_OVER_IMAGE_HEIGHT = 600;
     private final Group root;
     private final WinImage winImage;
     private final GameOverImage gameOverImage;
     private final HeartDisplay heartDisplay;
     private final Text pauseText;
     protected final Text killsRemainingText;
+    private Button mainMenuButton;
 
     public LevelView(Group root, int heartsToDisplay) {
         this.root = root;
@@ -57,11 +61,13 @@ public class LevelView {
         killsRemainingText = new Text();
         killsRemainingText.setFont(Font.font("Monospaced", FontWeight.BOLD, 20));
         killsRemainingText.setFill(Color.WHITE);
-        killsRemainingText.setX(50); // Top-left corner
+        killsRemainingText.setX(50);
         killsRemainingText.setY(50);
         root.getChildren().add(killsRemainingText);
 
         killsRemainingText.toFront();
+        
+        createMainMenuButton();
     }
 
     public void showHeartDisplay() {
@@ -71,10 +77,14 @@ public class LevelView {
     public void showWinImage() {
         root.getChildren().add(winImage);
         winImage.showWinImage();
+        mainMenuButton.setVisible(true);
+        mainMenuButton.toFront();
     }
 
     public void showGameOverImage() {
         root.getChildren().add(gameOverImage);
+        mainMenuButton.setVisible(true);
+        mainMenuButton.toFront();
     }
 
     public void removeHearts(int heartsRemaining) {
@@ -115,5 +125,67 @@ public class LevelView {
 
         killsRemainingText.setVisible(true);
         killsRemainingText.toFront();
+    }
+    
+    private void createMainMenuButton() {
+        mainMenuButton = new Button("Main Menu");
+        
+        double windowWidth = root.getScene().getWidth();
+        double windowHeight = root.getScene().getHeight();
+        
+        double buttonWidth = 200;
+        double buttonHeight = 50;
+        
+        mainMenuButton.setLayoutX((windowWidth - buttonWidth) / 2);
+        mainMenuButton.setLayoutY(windowHeight - 200);
+        mainMenuButton.setPrefWidth(buttonWidth);
+        mainMenuButton.setPrefHeight(buttonHeight);
+
+        mainMenuButton.setStyle(
+            "-fx-background-color: #FF4444; " +
+            "-fx-text-fill: white; " +
+            "-fx-font-size: 16px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 2); " +
+            "-fx-cursor: hand; " +
+            "-fx-transition: all 0.3s ease;"
+        );
+
+        mainMenuButton.setOnMouseEntered(e -> {
+            mainMenuButton.setStyle(
+                "-fx-background-color: #FF6666; " + 
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 16px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 8, 0, 0, 3); " + 
+                "-fx-cursor: hand; " +
+                "-fx-scale-x: 1.1; " + 
+                "-fx-scale-y: 1.1; " +
+                "-fx-transition: all 0.3s ease;"
+            );
+        });
+
+        mainMenuButton.setOnMouseExited(e -> {
+            mainMenuButton.setStyle(
+                "-fx-background-color: #FF4444; " +
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 16px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 2); " +
+                "-fx-cursor: hand; " +
+                "-fx-scale-x: 1.0; " +
+                "-fx-scale-y: 1.0; " +
+                "-fx-transition: all 0.3s ease;"
+            );
+        });
+
+        mainMenuButton.setOnAction(event -> {
+            javafx.stage.Stage stage = (javafx.stage.Stage) mainMenuButton.getScene().getWindow();
+            Controller controller = new Controller(stage);
+            controller.launchGame();
+        });
+
+        mainMenuButton.setVisible(false);
+        root.getChildren().add(mainMenuButton);
     }
 }
