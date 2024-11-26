@@ -24,9 +24,11 @@ public class Boss extends FighterPlane {
 	private int consecutiveMovesInSameDirection;
 	private int indexOfCurrentMove;
 	private int framesWithShieldActivated;
+	private final LevelViewLevelTwo levelView;
 
-	public Boss() {
+	public Boss(LevelViewLevelTwo levelView) {
 		super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, HEALTH);
+		this.levelView = levelView;
 		movePattern = new ArrayList<>();
 		consecutiveMovesInSameDirection = 0;
 		indexOfCurrentMove = 0;
@@ -73,9 +75,13 @@ public class Boss extends FighterPlane {
 	}
 
 	private void updateShield() {
-		if (isShielded) framesWithShieldActivated++;
-		else if (shieldShouldBeActivated()) activateShield();	
-		if (shieldExhausted()) deactivateShield();
+	    if (isShielded) {
+	        framesWithShieldActivated++;
+	        levelView.updateShieldPosition(getLayoutX() + getTranslateX() - 60, getLayoutY() + getTranslateY() + 60);
+	    } else if (shieldShouldBeActivated()) {
+	        activateShield();
+	    }
+	    if (shieldExhausted()) deactivateShield();
 	}
 
 	private int getNextMove() {
@@ -110,13 +116,13 @@ public class Boss extends FighterPlane {
 
 	private void activateShield() {
 		isShielded = true;
+		levelView.showShield();
 	}
 
 	private void deactivateShield() {
 		isShielded = false;
 		framesWithShieldActivated = 0;
+		 levelView.hideShield();
 	}
-	public int getHealth() {
-	    return super.getHealth();
-	}
+
 }
