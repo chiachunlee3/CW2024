@@ -40,6 +40,9 @@ Make the game over layout image fit into the screen, by adjusting the image widt
 ## Removed Irrelevant command
 Removed a line of command in ActiveActor class where the command I removed look like a commented out version that tries to load the image directly from a path string, where in the next line of code included the proper way to load resources. Removed a line of command in GameOverImage class where the command I removed is redundant and not being utilized in the code at all. 
 
+## Make the shield visible and follow the movement of the enemy plane
+The boss shield is now visible when activated. Now the shield image follow the boss plane movement when it's activated so that it's more visible compare to being strictly in a place and not moving.
+
 # Addition
 ## Added pause function
 When in the game screen, player can pause the game by pressing the button 'p', the game will pause and the background would be blurred and the text "Game Paused" will appear on screen. 

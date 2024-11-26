@@ -37,6 +37,7 @@ public class LevelViewLevelTwo extends LevelView {
 	
 	public void showShield() {
 		shieldImage.showShield();
+		shieldImage.toFront();
 	}
 
 	public void hideShield() {
@@ -52,4 +53,8 @@ public class LevelViewLevelTwo extends LevelView {
         bossHealthText.setText("Boss Health: " + bossHealth);
         bossHealthText.toFront();
     }
+	
+	public void updateShieldPosition(double x, double y) {
+	    shieldImage.setPosition(x, y);
+	}
 }
