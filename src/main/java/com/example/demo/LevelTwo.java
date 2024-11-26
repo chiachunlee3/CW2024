@@ -9,7 +9,8 @@ public class LevelTwo extends LevelParent {
 
 	public LevelTwo(double screenHeight, double screenWidth) {
 		super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH);
-		boss = new Boss();
+		levelView.showShield();
+		boss = new Boss(levelView);
 	}
 
 	@Override
@@ -39,5 +40,10 @@ public class LevelTwo extends LevelParent {
 		levelView = new LevelViewLevelTwo(getRoot(), PLAYER_INITIAL_HEALTH);
 		return levelView;
 	}
-
+	
+	@Override
+	protected void updateScene() {
+	    super.updateScene();
+	    levelView.updateBossHealth(boss.getHealth());
+	}
 }

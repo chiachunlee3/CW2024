@@ -11,6 +11,9 @@ Warning fixes in ShieldImage class where the string IMAGE_NAME is created but no
 
 
 # Additional Java Class
+## Main Menu class
+Added a new class for main menu, where the game doesn't start straight away on level one it start on the main menu, player can choose to play the game or exit it.
+
 
 # Modified Java Class
 ## Observable type is deprecated
@@ -36,3 +39,16 @@ Make the game over layout image fit into the screen, by adjusting the image widt
 
 ## Removed Irrelevant command
 Removed a line of command in ActiveActor class where the command I removed look like a commented out version that tries to load the image directly from a path string, where in the next line of code included the proper way to load resources. Removed a line of command in GameOverImage class where the command I removed is redundant and not being utilized in the code at all. 
+
+## Make the shield visible and follow the movement of the enemy plane
+The boss shield is now visible when activated. Now the shield image follow the boss plane movement when it's activated so that it's more visible compare to being strictly in a place and not moving.
+
+# Addition
+## Added pause function
+When in the game screen, player can pause the game by pressing the button 'p', the game will pause and the background would be blurred and the text "Game Paused" will appear on screen. 
+
+## Display kill needed to advance/win 
+Added a text that display the current kill needed to advance/win the game, it will update everytime an enemy was hit and it will display the amount of enemy needed to be killed before advancing to the next level.
+
+## Back to main menu button to game over screen and you win screen
+Added a main menu button that can bring player back to the main menu when they lose they game and the game over image shown or when they win the game and the you win image is shown. 

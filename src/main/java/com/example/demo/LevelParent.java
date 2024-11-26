@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.util.Duration;
+import javafx.scene.effect.GaussianBlur;
 
 public abstract class LevelParent {
 
@@ -34,10 +35,13 @@ public abstract class LevelParent {
     private int currentNumberOfEnemies;
     private LevelView levelView;
     private Consumer<String> levelChangeCallback;
+    
+    private final Group pauseOverlay = new Group();
+    private final GaussianBlur blurEffect = new GaussianBlur(10); 
 
     public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
         this.root = new Group();
-        this.scene = new Scene(root, screenWidth, screenHeight);
+        this.scene = new Scene(new Group(root, pauseOverlay), screenWidth, screenHeight);
         this.timeline = new Timeline();
         this.user = new UserPlane(playerInitialHealth);
         this.friendlyUnits = new ArrayList<>();
@@ -53,6 +57,8 @@ public abstract class LevelParent {
         this.currentNumberOfEnemies = 0;
         initializeTimeline();
         friendlyUnits.add(user);
+        
+        pauseOverlay.setMouseTransparent(true);
     }
 
     protected abstract void initializeFriendlyUnits();
@@ -86,7 +92,8 @@ public abstract class LevelParent {
         }
     }
 
-    private void updateScene() {
+    protected void updateScene() {
+    	if (isPaused) return;
         spawnEnemyUnits();
         updateActors();
         generateEnemyFire();
@@ -117,8 +124,10 @@ public abstract class LevelParent {
                 if (kc == KeyCode.UP) user.moveUp();
                 if (kc == KeyCode.DOWN) user.moveDown();
                 if (kc == KeyCode.SPACE) fireProjectile();
+                if (kc == KeyCode.P) togglePause(); // Add toggle for pause
             }
         });
+
         background.setOnKeyReleased(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent e) {
                 KeyCode kc = e.getCode();
@@ -202,6 +211,9 @@ public abstract class LevelParent {
 
     private void updateLevelView() {
         levelView.removeHearts(user.getHealth());
+        int killsToAdvance = LevelOne.getKillsToAdvance();
+        int killsRemaining = killsToAdvance - user.getNumberOfKills();
+        levelView.updateKillsRemaining(Math.max(0, killsRemaining));
     }
 
     private void updateKillCount() {
@@ -256,5 +268,27 @@ public abstract class LevelParent {
     private void updateNumberOfEnemies() {
         currentNumberOfEnemies = enemyUnits.size();
     }
+    
+    private boolean isPaused = false;
+
+    public void togglePause() {
+        isPaused = !isPaused;
+        if (isPaused) {
+            timeline.pause();
+            levelView.showPauseText();
+            root.setEffect(blurEffect);
+            pauseOverlay.getChildren().add(levelView.getPauseText());
+        } else {
+            timeline.play();
+            levelView.hidePauseText();
+            root.setEffect(null);
+            pauseOverlay.getChildren().clear();
+        }
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+    
 }
 
