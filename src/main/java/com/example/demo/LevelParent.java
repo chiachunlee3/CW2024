@@ -278,6 +278,8 @@ public abstract class LevelParent {
             levelView.showPauseText();
             root.setEffect(blurEffect);
             pauseOverlay.getChildren().add(levelView.getPauseText());
+            pauseOverlay.getChildren().add(levelView.getMainMenuButton());
+            pauseOverlay.setMouseTransparent(false);
         } else {
             timeline.play();
             levelView.hidePauseText();

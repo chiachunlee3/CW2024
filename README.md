@@ -50,5 +50,5 @@ When in the game screen, player can pause the game by pressing the button 'p', t
 ## Display kill needed to advance/win 
 Added a text that display the current kill needed to advance/win the game, it will update everytime an enemy was hit and it will display the amount of enemy needed to be killed before advancing to the next level.
 
-## Back to main menu button to game over screen and you win screen
-Added a main menu button that can bring player back to the main menu when they lose they game and the game over image shown or when they win the game and the you win image is shown. 
+## Back to main menu button
+Added a main menu button that can bring player back to the main menu when they lose the game, win the game or pause the game. 
