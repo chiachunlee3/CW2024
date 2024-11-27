@@ -52,3 +52,6 @@ Added a text that display the current kill needed to advance/win the game, it wi
 
 ## Back to main menu button
 Added a main menu button that can bring player back to the main menu when they lose the game, win the game or pause the game. 
+
+## Transition screen
+Added transition screen between level transition, when the start button is clicked it transition into level 1 or when level 1 is complete it slowly transition into level 2.
