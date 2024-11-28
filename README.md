@@ -55,3 +55,6 @@ Added a main menu button that can bring player back to the main menu when they l
 
 ## Transition screen
 Added transition screen between level transition, when the start button is clicked it transition into level 1 or when level 1 is complete it slowly transition into level 2.
+
+## Health Bar for the Boss plane
+Added a health bar to indicate the health of the boss plane in level 2, the bar appears at the top right corner of level 2 and it shows the current health of the boss.
