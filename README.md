@@ -50,5 +50,11 @@ When in the game screen, player can pause the game by pressing the button 'p', t
 ## Display kill needed to advance/win 
 Added a text that display the current kill needed to advance/win the game, it will update everytime an enemy was hit and it will display the amount of enemy needed to be killed before advancing to the next level.
 
-## Back to main menu button to game over screen and you win screen
-Added a main menu button that can bring player back to the main menu when they lose they game and the game over image shown or when they win the game and the you win image is shown. 
+## Back to main menu button
+Added a main menu button that can bring player back to the main menu when they lose the game, win the game or pause the game. 
+
+## Transition screen
+Added transition screen between level transition, when the start button is clicked it transition into level 1 or when level 1 is complete it slowly transition into level 2.
+
+## Health Bar for the Boss plane
+Added a health bar to indicate the health of the boss plane in level 2, the bar appears at the top right corner of level 2 and it shows the current health of the boss.

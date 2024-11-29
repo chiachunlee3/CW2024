@@ -44,6 +44,6 @@ public class LevelTwo extends LevelParent {
 	@Override
 	protected void updateScene() {
 	    super.updateScene();
-	    levelView.updateBossHealth(boss.getHealth());
+	    levelView.updateBossHealth(boss.getHealth(), boss.getMaxHealth());
 	}
 }

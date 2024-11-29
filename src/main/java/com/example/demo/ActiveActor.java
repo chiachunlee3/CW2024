@@ -29,7 +29,7 @@ public abstract class ActiveActor extends ImageView {
     public Bounds getPreciseBounds() {
         Bounds bounds = this.getBoundsInParent();
         // Reduce height by 70% (making hitbox only 30% of original height)
-        double verticalReduction = 0.7;
+        double verticalReduction = 0.8;
         double heightReduction = bounds.getHeight() * verticalReduction;
         return new javafx.geometry.BoundingBox(
             bounds.getMinX(),

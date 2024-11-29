@@ -103,10 +103,13 @@ public class LevelView {
         updatePauseTextPosition();
         pauseText.setVisible(true);
         pauseText.toFront();
+        mainMenuButton.setVisible(true);
+        mainMenuButton.toFront();
     }
 
     public void hidePauseText() {
         pauseText.setVisible(false);
+        mainMenuButton.setVisible(false);
     }
 
     public Text getPauseText() {
@@ -187,5 +190,9 @@ public class LevelView {
 
         mainMenuButton.setVisible(false);
         root.getChildren().add(mainMenuButton);
+    }
+    
+    public Button getMainMenuButton() {
+        return mainMenuButton;
     }
 }
