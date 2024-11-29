@@ -58,3 +58,6 @@ Added transition screen between level transition, when the start button is click
 
 ## Health Bar for the Boss plane
 Added a health bar to indicate the health of the boss plane in level 2, the bar appears at the top right corner of level 2 and it shows the current health of the boss.
+
+## Visual effect when player loses health
+Added a red filter that make the screen red for a second when player loses a health either by getting hit by enemy bullet, colliding with enemy plane or when enemy plane passes through the left side of the screen. 

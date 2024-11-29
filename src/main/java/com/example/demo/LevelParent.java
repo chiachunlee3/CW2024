@@ -38,10 +38,12 @@ public abstract class LevelParent {
     
     private final Group pauseOverlay = new Group();
     private final GaussianBlur blurEffect = new GaussianBlur(10); 
-
+    private RedScreenEffect hitEffect;
+    private final Group overlayGroup = new Group();
+    
     public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
         this.root = new Group();
-        this.scene = new Scene(new Group(root, pauseOverlay), screenWidth, screenHeight);
+        this.scene = new Scene(new Group(root, overlayGroup, pauseOverlay), screenWidth, screenHeight);
         this.timeline = new Timeline();
         this.user = new UserPlane(playerInitialHealth);
         this.friendlyUnits = new ArrayList<>();
@@ -59,6 +61,8 @@ public abstract class LevelParent {
         friendlyUnits.add(user);
         
         pauseOverlay.setMouseTransparent(true);
+        
+        hitEffect = new RedScreenEffect(screenWidth, screenHeight, overlayGroup);
     }
 
     protected abstract void initializeFriendlyUnits();
@@ -185,25 +189,37 @@ public abstract class LevelParent {
     }
 
     private void handleEnemyProjectileCollisions() {
-        handleCollisions(enemyProjectiles, friendlyUnits);
-    }
-
-    private void handleCollisions(List<ActiveActorDestructible> actors1,
-            List<ActiveActorDestructible> actors2) {
-        for (ActiveActorDestructible actor : actors2) {
-            for (ActiveActorDestructible otherActor : actors1) {
-                if (actor.getPreciseBounds().intersects(otherActor.getPreciseBounds())) {
-                    actor.takeDamage();
-                    otherActor.takeDamage();
+        for (ActiveActorDestructible projectile : enemyProjectiles) {
+            for (ActiveActorDestructible friendlyUnit : friendlyUnits) {
+                if (projectile.getPreciseBounds().intersects(friendlyUnit.getPreciseBounds())) {
+                    projectile.takeDamage();
+                    friendlyUnit.takeDamage();
+                    hitEffect.trigger(); // Trigger red screen effect
                 }
             }
         }
     }
 
+    private void handleCollisions(List<ActiveActorDestructible> actors1, List<ActiveActorDestructible> actors2) {
+        for (ActiveActorDestructible actor : actors2) {
+            for (ActiveActorDestructible otherActor : actors1) {
+                if (actor.getPreciseBounds().intersects(otherActor.getPreciseBounds())) {
+                    actor.takeDamage();
+                    otherActor.takeDamage();
+                    if (otherActor instanceof UserPlane || actor instanceof UserPlane) {
+                        hitEffect.trigger(); // Trigger red screen effect for plane collisions
+                    }
+                }
+            }
+        }
+    }
+
+
     private void handleEnemyPenetration() {
         for (ActiveActorDestructible enemy : enemyUnits) {
             if (enemyHasPenetratedDefenses(enemy)) {
                 user.takeDamage();
+                hitEffect.trigger();
                 enemy.destroy();
             }
         }
