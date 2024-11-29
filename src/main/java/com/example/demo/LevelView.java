@@ -77,12 +77,18 @@ public class LevelView {
     public void showWinImage() {
         root.getChildren().add(winImage);
         winImage.showWinImage();
+        if (!root.getChildren().contains(mainMenuButton)) {
+            root.getChildren().add(mainMenuButton);
+        }
         mainMenuButton.setVisible(true);
         mainMenuButton.toFront();
     }
 
     public void showGameOverImage() {
         root.getChildren().add(gameOverImage);
+        if (!root.getChildren().contains(mainMenuButton)) {
+            root.getChildren().add(mainMenuButton);
+        }
         mainMenuButton.setVisible(true);
         mainMenuButton.toFront();
     }

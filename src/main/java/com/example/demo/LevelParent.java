@@ -282,11 +282,12 @@ public abstract class LevelParent {
             pauseOverlay.setMouseTransparent(false);
         } else {
             timeline.play();
-            levelView.hidePauseText();
+            levelView.hidePauseText(); // Do not hide the main menu button here.
             root.setEffect(null);
             pauseOverlay.getChildren().clear();
         }
     }
+
 
     public boolean isPaused() {
         return isPaused;
