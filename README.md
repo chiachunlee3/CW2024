@@ -61,3 +61,6 @@ Added a health bar to indicate the health of the boss plane in level 2, the bar 
 
 ## Visual effect when player loses health
 Added a red filter that make the screen red for a second when player loses a health either by getting hit by enemy bullet, colliding with enemy plane or when enemy plane passes through the left side of the screen. 
+
+## Level Cleared when the enemy killed to advance is reached
+Added a text to indicate when a level is cleared, the text shows up when the level is cleared before the transition screen for the level starts.

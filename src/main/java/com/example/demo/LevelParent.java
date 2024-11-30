@@ -13,6 +13,14 @@ import javafx.scene.input.*;
 import javafx.util.Duration;
 import javafx.scene.effect.GaussianBlur;
 
+import javafx.scene.text.Text;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.paint.Color;
+import javafx.scene.effect.DropShadow;
+import javafx.animation.PauseTransition;
+
+
 public abstract class LevelParent {
 
     private static final double SCREEN_HEIGHT_ADJUSTMENT = 150;
@@ -91,8 +99,26 @@ public abstract class LevelParent {
 
     protected void goToNextLevel(String levelName) {
         if (levelChangeCallback != null) {
-        	timeline.stop();
-            levelChangeCallback.accept(levelName);
+            // Stop game updates
+            timeline.stop();
+
+            // Display "Level Cleared" message
+            Text levelClearedText = new Text("Level Cleared!");
+            levelClearedText.setFont(Font.font("Monospaced", FontWeight.BOLD,100));
+            levelClearedText.setFill(Color.RED);
+            levelClearedText.setEffect(new DropShadow(5, Color.BLACK));
+            levelClearedText.setX(screenWidth / 2 - 420); // Center horizontally
+            levelClearedText.setY(screenHeight / 2);      // Center vertically
+
+            root.getChildren().add(levelClearedText);
+
+            // Delay before transitioning
+            PauseTransition pause = new PauseTransition(Duration.seconds(2));
+            pause.setOnFinished(event -> {
+                root.getChildren().remove(levelClearedText); // Clean up the message
+                levelChangeCallback.accept(levelName);
+            });
+            pause.play();
         }
     }
 
@@ -309,5 +335,8 @@ public abstract class LevelParent {
         return isPaused;
     }
     
+    protected double getScreenHeight() {
+        return screenHeight;
+    }
 }
 
