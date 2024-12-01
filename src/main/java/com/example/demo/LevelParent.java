@@ -19,7 +19,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.paint.Color;
 import javafx.scene.effect.DropShadow;
 import javafx.animation.PauseTransition;
-
+import com.example.demo.controller.Controller;
 
 public abstract class LevelParent {
 
@@ -48,9 +48,11 @@ public abstract class LevelParent {
     private final GaussianBlur blurEffect = new GaussianBlur(10); 
     private RedScreenEffect hitEffect;
     private final Group overlayGroup = new Group();
+    private final Controller controller;
     
-    public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
-        this.root = new Group();
+    public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth, Controller controller) {
+    	this.controller = controller;
+    	this.root = new Group();
         this.scene = new Scene(new Group(root, overlayGroup, pauseOverlay), screenWidth, screenHeight);
         this.timeline = new Timeline();
         this.user = new UserPlane(playerInitialHealth);
@@ -154,7 +156,8 @@ public abstract class LevelParent {
                 if (kc == KeyCode.UP) user.moveUp();
                 if (kc == KeyCode.DOWN) user.moveDown();
                 if (kc == KeyCode.SPACE) fireProjectile();
-                if (kc == KeyCode.P) togglePause(); // Add toggle for pause
+                if (kc == KeyCode.P) togglePause(); // Pause the game
+                if (kc == KeyCode.R) restartGame(); // Restart the game
             }
         });
 
@@ -165,6 +168,14 @@ public abstract class LevelParent {
             }
         });
         root.getChildren().add(background);
+    }
+
+    private void restartGame() {
+        if (controller != null) {
+            controller.restartLevel();
+        } else {
+            System.err.println("Controller is null, cannot restart game.");
+        }
     }
 
     private void fireProjectile() {
@@ -220,7 +231,7 @@ public abstract class LevelParent {
                 if (projectile.getPreciseBounds().intersects(friendlyUnit.getPreciseBounds())) {
                     projectile.takeDamage();
                     friendlyUnit.takeDamage();
-                    hitEffect.trigger(); // Trigger red screen effect
+                    hitEffect.trigger(); 
                 }
             }
         }
@@ -233,7 +244,7 @@ public abstract class LevelParent {
                     actor.takeDamage();
                     otherActor.takeDamage();
                     if (otherActor instanceof UserPlane || actor instanceof UserPlane) {
-                        hitEffect.trigger(); // Trigger red screen effect for plane collisions
+                        hitEffect.trigger(); 
                     }
                 }
             }
@@ -324,7 +335,7 @@ public abstract class LevelParent {
             pauseOverlay.setMouseTransparent(false);
         } else {
             timeline.play();
-            levelView.hidePauseText(); // Do not hide the main menu button here.
+            levelView.hidePauseText();
             root.setEffect(null);
             pauseOverlay.getChildren().clear();
         }

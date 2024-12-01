@@ -64,3 +64,6 @@ Added a red filter that make the screen red for a second when player loses a hea
 
 ## Level Cleared when the enemy killed to advance is reached
 Added a text to indicate when a level is cleared, the text shows up when the level is cleared before the transition screen for the level starts.
+
+## Restart game
+Added a function to restart the game when the button 'R' is pressed on the keyboard, the game will restart from level 1.

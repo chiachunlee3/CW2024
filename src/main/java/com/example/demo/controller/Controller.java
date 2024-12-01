@@ -64,7 +64,6 @@ public class Controller {
         return isPaused;
     }
     private void goToLevelWithTransition(String className) {
-    	// Determine the level text dynamically
         String levelText = "Level 1"; // Default to Level 1
         if (className.equals("com.example.demo.LevelTwo")) {
             levelText = "Level 2";
@@ -74,8 +73,8 @@ public class Controller {
             try {
                 // Load the actual game level
                 Class<?> myClass = Class.forName(className);
-                Constructor<?> constructor = myClass.getConstructor(double.class, double.class);
-                LevelParent myLevel = (LevelParent) constructor.newInstance(stage.getHeight(), stage.getWidth());
+                Constructor<?> constructor = myClass.getConstructor(double.class, double.class, Controller.class);
+                LevelParent myLevel = (LevelParent) constructor.newInstance(stage.getHeight(), stage.getWidth(), this);
                 myLevel.setOnLevelChange(this::handleLevelChange);
 
                 Scene gameScene = myLevel.initializeScene();
@@ -97,5 +96,32 @@ public class Controller {
         }).getScene();
 
         stage.setScene(transitionScene);
+    }
+
+    public void restartLevel() {
+        Scene currentScene = stage.getScene();
+        if (currentScene != null) {
+            Object currentRoot = currentScene.getRoot();
+            if (currentRoot instanceof LevelParent) {
+                LevelParent currentLevel = (LevelParent) currentRoot;
+                try {
+                    String className = currentLevel.getClass().getName();
+                    goToLevelWithTransition(className);
+                } catch (Exception e) {
+                    System.err.println("Error restarting level: " + e.getMessage());
+                    showError(e);
+                }
+            } else {
+                // Default to LevelOne
+                try {
+                    goToLevelWithTransition("com.example.demo.LevelOne");
+                } catch (Exception e) {
+                    System.err.println("Failed to reset to LevelOne: " + e.getMessage());
+                    showError(e);
+                }
+            }
+        } else {
+            System.err.println("Current scene is null.");
+        }
     }
 }
