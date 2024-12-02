@@ -87,6 +87,8 @@ public abstract class LevelParent {
         initializeBackground();
         initializeFriendlyUnits();
         levelView.showHeartDisplay();
+        root.getChildren().add(levelView.getInstructionText());
+        levelView.getInstructionText().toFront();
         return scene;
     }
 

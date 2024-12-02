@@ -25,6 +25,7 @@ public class LevelView {
     private final Text pauseText;
     protected final Text killsRemainingText;
     private Button mainMenuButton;
+    private final Text instructionText;
 
     public LevelView(Group root, int heartsToDisplay) {
         this.root = root;
@@ -68,6 +69,12 @@ public class LevelView {
         killsRemainingText.toFront();
         
         createMainMenuButton();
+        
+        instructionText = new Text("R: Restart | P: Pause");
+        instructionText.setFont(Font.font("Monospaced", FontWeight.BOLD, 18));
+        instructionText.setFill(Color.BLACK); 
+        instructionText.setX(30);
+        instructionText.setY(700);
     }
 
     public void showHeartDisplay() {
@@ -200,5 +207,9 @@ public class LevelView {
     
     public Button getMainMenuButton() {
         return mainMenuButton;
+    }
+   
+    public Text getInstructionText() {
+        return instructionText;
     }
 }
