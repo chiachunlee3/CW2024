@@ -212,4 +212,30 @@ public class LevelView {
     public Text getInstructionText() {
         return instructionText;
     }
+    
+    public void addHeart() {
+        System.out.println("Adding a heart to the display");
+        heartDisplay.addHeart();
+    }
+    
+    public int getCurrentHeartCount() {
+        return heartDisplay.getContainer().getChildren().size();
+    }
+    
+    public void updateHeartDisplay(int currentHealth) {
+        int currentHeartCount = heartDisplay.getCurrentHeartCount();
+
+        if (currentHeartCount < currentHealth) {
+            // Add hearts
+            for (int i = 0; i < currentHealth - currentHeartCount; i++) {
+                heartDisplay.addHeart();
+            }
+        } else if (currentHeartCount > currentHealth) {
+            // Remove excess hearts
+            for (int i = 0; i < currentHeartCount - currentHealth; i++) {
+                heartDisplay.removeHeart();
+            }
+        }
+    }
+
 }

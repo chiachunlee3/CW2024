@@ -70,3 +70,9 @@ Added a function to restart the game when the button 'R' is pressed on the keybo
 
 ## Instruction text
 Added an instruction text at the bottom left of the game screen to indicate how to pause and restart the game.
+
+## New Harder Level
+Added a new level after level two where enemy plane and boss spawned, player has to find a way to defeat the boss to win the game, the enemy plane will keep spawning until the boss plane is destroyed and player win the game.
+
+## Health projectile
+To make the level three easier, boss will sometimes project a heart shape projectile which is the health projectile, when player touches the projectile instead of taking damage it restore the health of the player and the heart display at the top left corner updates according to player's current health. The maximum health is 5, so when a player has a health of 5 they touches the projectile nothing will happen.

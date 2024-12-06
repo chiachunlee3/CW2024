@@ -2,7 +2,7 @@ package com.example.demo;
 
 public abstract class FighterPlane extends ActiveActorDestructible {
 
-	private int health;
+	protected int health;
 
 	public FighterPlane(String imageName, int imageHeight, double initialXPos, double initialYPos, int health) {
 		super(imageName, imageHeight, initialXPos, initialYPos);
@@ -33,6 +33,9 @@ public abstract class FighterPlane extends ActiveActorDestructible {
 
 	public int getHealth() {
 		return health;
+	}
+	protected void setHealth(int health) {
+	    this.health = health;
 	}
 		
 }

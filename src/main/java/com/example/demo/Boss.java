@@ -9,7 +9,6 @@ public class Boss extends FighterPlane {
 	private static final double INITIAL_Y_POSITION = 400;
 	private static final double PROJECTILE_Y_POSITION_OFFSET = 75.0;
 	private static final double BOSS_FIRE_RATE = .04;
-	private static final double BOSS_SHIELD_PROBABILITY = .002;
 	private static final int IMAGE_HEIGHT = 300;
 	private static final int VERTICAL_VELOCITY = 8;
 	private static final int MOVE_FREQUENCY_PER_CYCLE = 5;
@@ -26,11 +25,13 @@ public class Boss extends FighterPlane {
 	private final LevelViewLevelTwo levelView;
 	private static final int MAX_HEALTH = 100;
     private int currentHealth;
+    private final double shieldProbability;
 
-	public Boss(LevelViewLevelTwo levelView) {
+	public Boss(LevelViewLevelTwo levelView, double shieldProbability) {
 		super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, MAX_HEALTH);
 		this.levelView = levelView;
 		this.currentHealth = MAX_HEALTH;
+		this.shieldProbability = shieldProbability;
 		movePattern = new ArrayList<>();
 		consecutiveMovesInSameDirection = 0;
 		indexOfCurrentMove = 0;
@@ -57,7 +58,14 @@ public class Boss extends FighterPlane {
 
 	@Override
 	public ActiveActorDestructible fireProjectile() {
-		return bossFiresInCurrentFrame() ? new BossProjectile(getProjectileInitialPosition()) : null;
+	    if (bossFiresInCurrentFrame()) {
+	        if (Math.random() < 0.2) { // 20% chance to fire a health projectile
+	            return new HealthProjectile(getProjectileInitialPosition());
+	        } else {
+	            return new BossProjectile(getProjectileInitialPosition());
+	        }
+	    }
+	    return null;
 	}
 	
 	@Override
@@ -110,7 +118,7 @@ public class Boss extends FighterPlane {
 	}
 
 	private boolean shieldShouldBeActivated() {
-		return Math.random() < BOSS_SHIELD_PROBABILITY;
+		return Math.random() < shieldProbability;
 	}
 
 	private boolean shieldExhausted() {

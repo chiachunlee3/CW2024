@@ -64,10 +64,12 @@ public class Controller {
         return isPaused;
     }
     private void goToLevelWithTransition(String className) {
-        String levelText = "Level 1"; // Default to Level 1
-        if (className.equals("com.example.demo.LevelTwo")) {
-            levelText = "Level 2";
-        }
+    	 String levelText = "Level 1"; // Default to Level 1
+    	    if (className.equals("com.example.demo.LevelTwo")) {
+    	        levelText = "Level 2";
+    	    } else if (className.equals("com.example.demo.LevelThree")) {
+    	        levelText = "Level 3";
+    	    }
         
         Scene transitionScene = new TransitionScreen(stage.getWidth(), stage.getHeight(), levelText, () -> {
             try {

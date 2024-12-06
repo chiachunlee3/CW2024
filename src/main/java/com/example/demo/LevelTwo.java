@@ -8,11 +8,13 @@ public class LevelTwo extends LevelParent {
 	private static final int PLAYER_INITIAL_HEALTH = 5;
 	private final Boss boss;
 	private LevelViewLevelTwo levelView;
+	private static final String NEXT_LEVEL = "com.example.demo.LevelThree";
 
 	public LevelTwo(double screenHeight, double screenWidth, Controller controller) {
 		super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH, controller);
 		levelView.showShield();
-		boss = new Boss(levelView);
+		double levelThreeShieldProbability = 0.002;
+		boss = new Boss(levelView, levelThreeShieldProbability);
 	}
 
 	@Override
@@ -22,12 +24,11 @@ public class LevelTwo extends LevelParent {
 
 	@Override
 	protected void checkIfGameOver() {
-		if (userIsDestroyed()) {
-			loseGame();
-		}
-		else if (boss.isDestroyed()) {
-			winGame();
-		}
+	    if (userIsDestroyed()) {
+	        loseGame();
+	    } else if (boss.isDestroyed()) {
+	        goToNextLevel(NEXT_LEVEL);
+	    }
 	}
 
 	@Override

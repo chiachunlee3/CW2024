@@ -55,7 +55,8 @@ public abstract class LevelParent {
     	this.root = new Group();
         this.scene = new Scene(new Group(root, overlayGroup, pauseOverlay), screenWidth, screenHeight);
         this.timeline = new Timeline();
-        this.user = new UserPlane(playerInitialHealth);
+        levelView = new LevelView(root, playerInitialHealth);
+        this.user = new UserPlane(playerInitialHealth, levelView);
         this.friendlyUnits = new ArrayList<>();
         this.enemyUnits = new ArrayList<>();
         this.userProjectiles = new ArrayList<>();
@@ -230,10 +231,17 @@ public abstract class LevelParent {
     private void handleEnemyProjectileCollisions() {
         for (ActiveActorDestructible projectile : enemyProjectiles) {
             for (ActiveActorDestructible friendlyUnit : friendlyUnits) {
+                if (projectile instanceof HealthProjectile &&
+                    projectile.getPreciseBounds().intersects(friendlyUnit.getPreciseBounds())) {
+                    // Increase health and destroy the projectile
+                    getUser().increaseHealth();
+                    projectile.destroy();
+                    continue;
+                }
                 if (projectile.getPreciseBounds().intersects(friendlyUnit.getPreciseBounds())) {
                     projectile.takeDamage();
                     friendlyUnit.takeDamage();
-                    hitEffect.trigger(); 
+                    hitEffect.trigger();
                 }
             }
         }
@@ -265,11 +273,25 @@ public abstract class LevelParent {
     }
 
     private void updateLevelView() {
-        levelView.removeHearts(user.getHealth());
+        int currentHealth = user.getHealth();
+        int currentHeartCount = levelView.getCurrentHeartCount();
+
+        if (currentHeartCount < currentHealth) {
+            // Add hearts if health has increased
+            for (int i = 0; i < currentHealth - currentHeartCount; i++) {
+                levelView.addHeart();
+            }
+        } else if (currentHeartCount > currentHealth) {
+            // Remove hearts if health has decreased
+            levelView.removeHearts(currentHealth);
+        }
+
+        // Update other level view elements (e.g., kills remaining)
         int killsToAdvance = LevelOne.getKillsToAdvance();
         int killsRemaining = killsToAdvance - user.getNumberOfKills();
         levelView.updateKillsRemaining(Math.max(0, killsRemaining));
     }
+
 
     private void updateKillCount() {
         for (int i = 0; i < currentNumberOfEnemies - enemyUnits.size(); i++) {
