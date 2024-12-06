@@ -9,26 +9,29 @@ public class Boss extends FighterPlane {
 	private static final double INITIAL_Y_POSITION = 400;
 	private static final double PROJECTILE_Y_POSITION_OFFSET = 75.0;
 	private static final double BOSS_FIRE_RATE = .04;
-	private static final double BOSS_SHIELD_PROBABILITY = .002;
 	private static final int IMAGE_HEIGHT = 300;
 	private static final int VERTICAL_VELOCITY = 8;
-	private static final int HEALTH = 100;
 	private static final int MOVE_FREQUENCY_PER_CYCLE = 5;
 	private static final int ZERO = 0;
 	private static final int MAX_FRAMES_WITH_SAME_MOVE = 10;
 	private static final int Y_POSITION_UPPER_BOUND = -100;
 	private static final int Y_POSITION_LOWER_BOUND = 475;
-	private static final int MAX_FRAMES_WITH_SHIELD = 500;
+	private static final int MAX_FRAMES_WITH_SHIELD = 300;
 	private final List<Integer> movePattern;
 	private boolean isShielded;
 	private int consecutiveMovesInSameDirection;
 	private int indexOfCurrentMove;
 	private int framesWithShieldActivated;
 	private final LevelViewLevelTwo levelView;
+	private static final int MAX_HEALTH = 100;
+    private int currentHealth;
+    private final double shieldProbability;
 
-	public Boss(LevelViewLevelTwo levelView) {
-		super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, HEALTH);
+	public Boss(LevelViewLevelTwo levelView, double shieldProbability) {
+		super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, MAX_HEALTH);
 		this.levelView = levelView;
+		this.currentHealth = MAX_HEALTH;
+		this.shieldProbability = shieldProbability;
 		movePattern = new ArrayList<>();
 		consecutiveMovesInSameDirection = 0;
 		indexOfCurrentMove = 0;
@@ -55,12 +58,20 @@ public class Boss extends FighterPlane {
 
 	@Override
 	public ActiveActorDestructible fireProjectile() {
-		return bossFiresInCurrentFrame() ? new BossProjectile(getProjectileInitialPosition()) : null;
+	    if (bossFiresInCurrentFrame()) {
+	        if (Math.random() < 0.2) { // 20% chance to fire a health projectile
+	            return new HealthProjectile(getProjectileInitialPosition());
+	        } else {
+	            return new BossProjectile(getProjectileInitialPosition());
+	        }
+	    }
+	    return null;
 	}
 	
 	@Override
 	public void takeDamage() {
 		if (!isShielded) {
+			currentHealth--;
 			super.takeDamage();
 		}
 	}
@@ -107,7 +118,7 @@ public class Boss extends FighterPlane {
 	}
 
 	private boolean shieldShouldBeActivated() {
-		return Math.random() < BOSS_SHIELD_PROBABILITY;
+		return Math.random() < shieldProbability;
 	}
 
 	private boolean shieldExhausted() {
@@ -124,5 +135,11 @@ public class Boss extends FighterPlane {
 		framesWithShieldActivated = 0;
 		 levelView.hideShield();
 	}
+	public int getHealth() {
+        return currentHealth;
+    }
 
+    public int getMaxHealth() {
+        return MAX_HEALTH;
+    }
 }
