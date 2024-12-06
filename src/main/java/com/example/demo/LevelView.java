@@ -214,7 +214,6 @@ public class LevelView {
     }
     
     public void addHeart() {
-        System.out.println("Adding a heart to the display");
         heartDisplay.addHeart();
     }
     

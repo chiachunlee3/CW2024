@@ -6,8 +6,8 @@ public class LevelThree extends LevelParent {
 
     private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background3.jpg";
     private static final int PLAYER_INITIAL_HEALTH = 5;
-    private static final int TOTAL_ENEMIES = 5;
-    private static final double ENEMY_SPAWN_PROBABILITY = 0.15;
+    private static final int TOTAL_ENEMIES = 3;
+    private static final double ENEMY_SPAWN_PROBABILITY = 0.1;
     private Boss boss;
     private LevelViewLevelThree levelView;
 
@@ -19,7 +19,7 @@ public class LevelThree extends LevelParent {
     protected LevelView instantiateLevelView() {
         // Initialize levelView here
         levelView = new LevelViewLevelThree(getRoot(), PLAYER_INITIAL_HEALTH);
-        double levelThreeShieldProbability = 0.01;
+        double levelThreeShieldProbability = 0.005;
         // Initialize the boss after levelView is ready
         boss = new Boss(levelView, levelThreeShieldProbability);
 
