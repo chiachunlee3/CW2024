@@ -58,3 +58,21 @@ Added transition screen between level transition, when the start button is click
 
 ## Health Bar for the Boss plane
 Added a health bar to indicate the health of the boss plane in level 2, the bar appears at the top right corner of level 2 and it shows the current health of the boss.
+
+## Visual effect when player loses health
+Added a red filter that make the screen red for a second when player loses a health either by getting hit by enemy bullet, colliding with enemy plane or when enemy plane passes through the left side of the screen. 
+
+## Level Cleared when the enemy killed to advance is reached
+Added a text to indicate when a level is cleared, the text shows up when the level is cleared before the transition screen for the level starts.
+
+## Restart game
+Added a function to restart the game when the button 'R' is pressed on the keyboard, the game will restart from level 1.
+
+## Instruction text
+Added an instruction text at the bottom left of the game screen to indicate how to pause and restart the game.
+
+## New Harder Level
+Added a new level after level two where enemy plane and boss spawned, player has to find a way to defeat the boss to win the game, the enemy plane will keep spawning until the boss plane is destroyed and player win the game.
+
+## Health projectile
+To make the level three easier, boss will sometimes project a heart shape projectile which is the health projectile, when player touches the projectile instead of taking damage it restore the health of the player and the heart display at the top left corner updates according to player's current health. The maximum health is 5, so when a player has a health of 5 they touches the projectile nothing will happen.

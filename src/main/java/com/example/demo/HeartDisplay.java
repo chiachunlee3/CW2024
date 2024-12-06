@@ -46,5 +46,17 @@ public class HeartDisplay {
 	public HBox getContainer() {
 		return container;
 	}
-
+	
+	public void addHeart() {
+	    ImageView heart = new ImageView(new Image(getClass().getResource(HEART_IMAGE_NAME).toExternalForm()));
+	    heart.setFitHeight(HEART_HEIGHT);
+	    heart.setPreserveRatio(true);
+	    container.getChildren().add(heart);
+	    container.applyCss();
+	    container.layout();
+	}
+	
+	public int getCurrentHeartCount() {
+	    return container.getChildren().size();
+	}
 }

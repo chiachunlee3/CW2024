@@ -13,6 +13,14 @@ import javafx.scene.input.*;
 import javafx.util.Duration;
 import javafx.scene.effect.GaussianBlur;
 
+import javafx.scene.text.Text;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.paint.Color;
+import javafx.scene.effect.DropShadow;
+import javafx.animation.PauseTransition;
+import com.example.demo.controller.Controller;
+
 public abstract class LevelParent {
 
     private static final double SCREEN_HEIGHT_ADJUSTMENT = 150;
@@ -38,12 +46,17 @@ public abstract class LevelParent {
     
     private final Group pauseOverlay = new Group();
     private final GaussianBlur blurEffect = new GaussianBlur(10); 
-
-    public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
-        this.root = new Group();
-        this.scene = new Scene(new Group(root, pauseOverlay), screenWidth, screenHeight);
+    private RedScreenEffect hitEffect;
+    private final Group overlayGroup = new Group();
+    private final Controller controller;
+    
+    public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth, Controller controller) {
+    	this.controller = controller;
+    	this.root = new Group();
+        this.scene = new Scene(new Group(root, overlayGroup, pauseOverlay), screenWidth, screenHeight);
         this.timeline = new Timeline();
-        this.user = new UserPlane(playerInitialHealth);
+        levelView = new LevelView(root, playerInitialHealth);
+        this.user = new UserPlane(playerInitialHealth, levelView);
         this.friendlyUnits = new ArrayList<>();
         this.enemyUnits = new ArrayList<>();
         this.userProjectiles = new ArrayList<>();
@@ -59,6 +72,8 @@ public abstract class LevelParent {
         friendlyUnits.add(user);
         
         pauseOverlay.setMouseTransparent(true);
+        
+        hitEffect = new RedScreenEffect(screenWidth, screenHeight, overlayGroup);
     }
 
     protected abstract void initializeFriendlyUnits();
@@ -73,6 +88,8 @@ public abstract class LevelParent {
         initializeBackground();
         initializeFriendlyUnits();
         levelView.showHeartDisplay();
+        root.getChildren().add(levelView.getInstructionText());
+        levelView.getInstructionText().toFront();
         return scene;
     }
 
@@ -87,8 +104,26 @@ public abstract class LevelParent {
 
     protected void goToNextLevel(String levelName) {
         if (levelChangeCallback != null) {
-        	timeline.stop();
-            levelChangeCallback.accept(levelName);
+            // Stop game updates
+            timeline.stop();
+
+            // Display "Level Cleared" message
+            Text levelClearedText = new Text("Level Cleared!");
+            levelClearedText.setFont(Font.font("Monospaced", FontWeight.BOLD,100));
+            levelClearedText.setFill(Color.RED);
+            levelClearedText.setEffect(new DropShadow(5, Color.BLACK));
+            levelClearedText.setX(screenWidth / 2 - 420); // Center horizontally
+            levelClearedText.setY(screenHeight / 2);      // Center vertically
+
+            root.getChildren().add(levelClearedText);
+
+            // Delay before transitioning
+            PauseTransition pause = new PauseTransition(Duration.seconds(2));
+            pause.setOnFinished(event -> {
+                root.getChildren().remove(levelClearedText); // Clean up the message
+                levelChangeCallback.accept(levelName);
+            });
+            pause.play();
         }
     }
 
@@ -124,7 +159,8 @@ public abstract class LevelParent {
                 if (kc == KeyCode.UP) user.moveUp();
                 if (kc == KeyCode.DOWN) user.moveDown();
                 if (kc == KeyCode.SPACE) fireProjectile();
-                if (kc == KeyCode.P) togglePause(); // Add toggle for pause
+                if (kc == KeyCode.P) togglePause(); // Pause the game
+                if (kc == KeyCode.R) restartGame(); // Restart the game
             }
         });
 
@@ -135,6 +171,14 @@ public abstract class LevelParent {
             }
         });
         root.getChildren().add(background);
+    }
+
+    private void restartGame() {
+        if (controller != null) {
+            controller.restartLevel();
+        } else {
+            System.err.println("Controller is null, cannot restart game.");
+        }
     }
 
     private void fireProjectile() {
@@ -185,36 +229,69 @@ public abstract class LevelParent {
     }
 
     private void handleEnemyProjectileCollisions() {
-        handleCollisions(enemyProjectiles, friendlyUnits);
-    }
-
-    private void handleCollisions(List<ActiveActorDestructible> actors1,
-            List<ActiveActorDestructible> actors2) {
-        for (ActiveActorDestructible actor : actors2) {
-            for (ActiveActorDestructible otherActor : actors1) {
-                if (actor.getPreciseBounds().intersects(otherActor.getPreciseBounds())) {
-                    actor.takeDamage();
-                    otherActor.takeDamage();
+        for (ActiveActorDestructible projectile : enemyProjectiles) {
+            for (ActiveActorDestructible friendlyUnit : friendlyUnits) {
+                if (projectile instanceof HealthProjectile &&
+                    projectile.getPreciseBounds().intersects(friendlyUnit.getPreciseBounds())) {
+                    // Increase health and destroy the projectile
+                    getUser().increaseHealth();
+                    projectile.destroy();
+                    continue;
+                }
+                if (projectile.getPreciseBounds().intersects(friendlyUnit.getPreciseBounds())) {
+                    projectile.takeDamage();
+                    friendlyUnit.takeDamage();
+                    hitEffect.trigger();
                 }
             }
         }
     }
 
+    private void handleCollisions(List<ActiveActorDestructible> actors1, List<ActiveActorDestructible> actors2) {
+        for (ActiveActorDestructible actor : actors2) {
+            for (ActiveActorDestructible otherActor : actors1) {
+                if (actor.getPreciseBounds().intersects(otherActor.getPreciseBounds())) {
+                    actor.takeDamage();
+                    otherActor.takeDamage();
+                    if (otherActor instanceof UserPlane || actor instanceof UserPlane) {
+                        hitEffect.trigger(); 
+                    }
+                }
+            }
+        }
+    }
+
+
     private void handleEnemyPenetration() {
         for (ActiveActorDestructible enemy : enemyUnits) {
             if (enemyHasPenetratedDefenses(enemy)) {
                 user.takeDamage();
+                hitEffect.trigger();
                 enemy.destroy();
             }
         }
     }
 
     private void updateLevelView() {
-        levelView.removeHearts(user.getHealth());
+        int currentHealth = user.getHealth();
+        int currentHeartCount = levelView.getCurrentHeartCount();
+
+        if (currentHeartCount < currentHealth) {
+            // Add hearts if health has increased
+            for (int i = 0; i < currentHealth - currentHeartCount; i++) {
+                levelView.addHeart();
+            }
+        } else if (currentHeartCount > currentHealth) {
+            // Remove hearts if health has decreased
+            levelView.removeHearts(currentHealth);
+        }
+
+        // Update other level view elements (e.g., kills remaining)
         int killsToAdvance = LevelOne.getKillsToAdvance();
         int killsRemaining = killsToAdvance - user.getNumberOfKills();
         levelView.updateKillsRemaining(Math.max(0, killsRemaining));
     }
+
 
     private void updateKillCount() {
         for (int i = 0; i < currentNumberOfEnemies - enemyUnits.size(); i++) {
@@ -282,7 +359,7 @@ public abstract class LevelParent {
             pauseOverlay.setMouseTransparent(false);
         } else {
             timeline.play();
-            levelView.hidePauseText(); // Do not hide the main menu button here.
+            levelView.hidePauseText();
             root.setEffect(null);
             pauseOverlay.getChildren().clear();
         }
@@ -293,5 +370,8 @@ public abstract class LevelParent {
         return isPaused;
     }
     
+    protected double getScreenHeight() {
+        return screenHeight;
+    }
 }
 
