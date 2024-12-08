@@ -10,17 +10,31 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+/**
+ * The {@code TransitionScreen} class provides a transition screen effect
+ * for moving between game levels or scenes. It displays a full-screen
+ * message with fade-in and fade-out transitions.
+ */
 public class TransitionScreen {
-    private final Scene scene;
 
+    private final Scene scene; // The scene representing the transition screen
+
+    /**
+     * Constructs a {@code TransitionScreen} object.
+     *
+     * @param width           the width of the screen.
+     * @param height          the height of the screen.
+     * @param levelTextContent the text to display during the transition (e.g., level name).
+     * @param onFinish        a {@code Runnable} to execute after the transition finishes.
+     */
     public TransitionScreen(double width, double height, String levelTextContent, Runnable onFinish) {
-        /// Create a root layout for the transition screen
-    	StackPane root = new StackPane();
+        // Create a root layout for the transition screen
+        StackPane root = new StackPane();
 
-    	// Set the background of the root to black
-    	root.setStyle("-fx-background-color: black;");
+        // Set the background of the root to black
+        root.setStyle("-fx-background-color: black;");
 
-        // Set scene size and ensure the background is black
+        // Set the scene size and ensure the background is black
         scene = new Scene(root, width, height, Color.WHITE);
 
         // Create a full-screen black rectangle
@@ -38,16 +52,7 @@ public class TransitionScreen {
         // Add the black background and level text to the root layout
         root.getChildren().addAll(background, levelText);
 
-        // Create fade-in and fade-out transitions
-        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), levelText);
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1);
-
-        FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), levelText);
-        fadeOut.setFromValue(1);
-        fadeOut.setToValue(0);
-
-     // Create fade-in and fade-out transitions for the text
+        // Create fade-in and fade-out transitions for the text
         FadeTransition fadeInText = new FadeTransition(Duration.seconds(1), levelText);
         fadeInText.setFromValue(0);
         fadeInText.setToValue(1);
@@ -60,8 +65,8 @@ public class TransitionScreen {
         FadeTransition fadeOutBackground = new FadeTransition(Duration.seconds(0.5), background);
         fadeOutBackground.setFromValue(1);
         fadeOutBackground.setToValue(0);
-        
-     // Create fade-out transition for the root node
+
+        // Create fade-out transition for the root node
         FadeTransition fadeOutRoot = new FadeTransition(Duration.seconds(0.5), root);
         fadeOutRoot.setFromValue(1);
         fadeOutRoot.setToValue(0);
@@ -84,6 +89,11 @@ public class TransitionScreen {
         fadeInText.play();
     }
 
+    /**
+     * Retrieves the {@code Scene} object for the transition screen.
+     *
+     * @return the {@code Scene} representing the transition screen.
+     */
     public Scene getScene() {
         return scene;
     }

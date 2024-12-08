@@ -7,11 +7,23 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+/**
+ * The {@code RedScreenEffect} class provides a red flash effect on the screen.
+ * This is useful for visual feedback, such as indicating damage or other significant events in the game.
+ */
 public class RedScreenEffect {
-    private final Rectangle overlay;
-    private final Timeline fadeAnimation;
-    private final Group root;
 
+    private final Rectangle overlay; // The red overlay displayed during the effect
+    private final Timeline fadeAnimation; // Animation for fading the red overlay
+    private final Group root; // The root group to which the overlay belongs
+
+    /**
+     * Constructs a {@code RedScreenEffect} instance with the specified screen dimensions and root group.
+     *
+     * @param screenWidth  the width of the screen.
+     * @param screenHeight the height of the screen.
+     * @param root         the root {@code Group} to which the overlay will be added.
+     */
     public RedScreenEffect(double screenWidth, double screenHeight, Group root) {
         this.root = root;
 
@@ -40,17 +52,25 @@ public class RedScreenEffect {
         fadeAnimation.setCycleCount(1); // Play once
     }
 
-
+    /**
+     * Triggers the red screen effect. The effect fades in and out as defined by the animation.
+     */
     public void trigger() {
         fadeAnimation.stop(); // Stop any running animation
         fadeAnimation.play(); // Start the animation
     }
 
+    /**
+     * Disposes of the red screen effect by stopping the animation and ensuring the overlay is transparent.
+     */
     public void dispose() {
         overlay.setOpacity(0); // Ensure it's transparent
         fadeAnimation.stop();
     }
 
+    /**
+     * Brings the red overlay to the front of the root group to ensure it is displayed above other elements.
+     */
     private void bringToFront() {
         root.getChildren().remove(overlay);
         root.getChildren().add(overlay); // Re-add it to ensure it's on top
