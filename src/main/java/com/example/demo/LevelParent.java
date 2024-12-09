@@ -7,26 +7,15 @@ package com.example.demo;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
-import javafx.animation.*;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.*;
-import javafx.scene.input.*;
-import javafx.util.Duration;
-import javafx.scene.effect.GaussianBlur;
-
-import javafx.scene.text.Text;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.paint.Color;
-import javafx.scene.effect.DropShadow;
-import javafx.animation.PauseTransition;
 import com.example.demo.controller.Controller;
 
 public abstract class LevelParent {
+	
+	private final PauseManager pauseManager;
 
     private static final double SCREEN_HEIGHT_ADJUSTMENT = 150;
     private static final int MILLISECOND_DELAY = 50;
@@ -47,24 +36,9 @@ public abstract class LevelParent {
     private final double enemyMaximumYPosition;
     
     /**
-     * Maximum Y position for enemy units to avoid leaving screen bounds.
-     */
-    private final Group root;
-    
-    /**
-     * Timeline for handling game loop animations.
-     */
-    private final Timeline timeline;
-    
-    /**
      * User-controlled plane in the level.
      */
     private final UserPlane user;
-    
-    /**
-     * The main scene of the level.
-     */
-    private final Scene scene;
     
     /**
      * Background image for the level.
@@ -82,16 +56,6 @@ public abstract class LevelParent {
     private final List<ActiveActorDestructible> enemyUnits;
     
     /**
-     * List of projectiles fired by the user.
-     */
-    private final List<ActiveActorDestructible> userProjectiles;
-    
-    /**
-     * List of projectiles fired by enemies.
-     */
-    private final List<ActiveActorDestructible> enemyProjectiles;
-    
-    /**
      * Current number of enemies in the level.
      */
     private int currentNumberOfEnemies;
@@ -102,36 +66,37 @@ public abstract class LevelParent {
     private LevelView levelView;
     
     /**
-     * Callback function to handle level transitions.
-     */
-    private Consumer<String> levelChangeCallback;
-    
-    /**
-     * Overlay group for rendering pause screen effects.
-     */
-    private final Group pauseOverlay = new Group();
-    
-    /**
-     * Blur effect applied during pause.
-     */
-    private final GaussianBlur blurEffect = new GaussianBlur(10); 
-    
-    /**
      * Visual effect for indicating hits.
      */
     private RedScreenEffect hitEffect;
-    
-    /**
-     * Overlay group for additional UI components.
-     */
-    private final Group overlayGroup = new Group();
     
     /**
      * Controller instance for handling level-specific logic.
      */
     private final Controller controller;
     
+    /**
+     * Indicates whether the game is currently paused.
+     */
+    private boolean isPaused = false;
     
+    //It's constructor adds the background image to the root node and sets up key event listeners.
+    private final BackgroundManager backgroundManager;
+    
+    private final ActorManager actorManager;
+    
+    private final CollisionManager collisionManager;
+    
+    private final GameLoopManager gameLoopManager;
+    
+    private final EnemyManager enemyManager;
+    
+    private final SceneManager sceneManager;
+    
+    private final LevelProjectileManager projectileManager;
+
+    private final LevelTransitionManager levelTransitionManager;
+
     /**
      * Constructs a new LevelParent instance with specified parameters.
      *
@@ -142,29 +107,52 @@ public abstract class LevelParent {
      * @param controller          the controller to manage level logic.
      */
     public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth, Controller controller) {
-    	this.controller = controller;
-    	this.root = new Group();
-        this.scene = new Scene(new Group(root, overlayGroup, pauseOverlay), screenWidth, screenHeight);
-        this.timeline = new Timeline();
-        levelView = new LevelView(root, playerInitialHealth);
+        this.controller = controller;
+        this.sceneManager = new SceneManager(screenWidth, screenHeight);
+        
+        // Use SceneManager's getters instead of direct field access
+        Group root = sceneManager.getRoot();
+        //Scene scene = sceneManager.getScene();
+        Group overlayGroup = sceneManager.getOverlayGroup();
+        Group pauseOverlay = sceneManager.getPauseOverlay();
+        this.gameLoopManager = new GameLoopManager(MILLISECOND_DELAY, this::updateScene);
+        this.levelTransitionManager = new LevelTransitionManager(sceneManager.getRoot(), screenWidth, screenHeight, gameLoopManager);
+        
+        this.levelView = instantiateLevelView();
         this.user = new UserPlane(playerInitialHealth, levelView);
         this.friendlyUnits = new ArrayList<>();
         this.enemyUnits = new ArrayList<>();
-        this.userProjectiles = new ArrayList<>();
-        this.enemyProjectiles = new ArrayList<>();
+        this.enemyManager = new EnemyManager(enemyUnits, SCREEN_HEIGHT_ADJUSTMENT, screenWidth, root);
 
         this.background = new ImageView(new Image(getClass().getResource(backgroundImageName).toExternalForm()));
         this.screenHeight = screenHeight;
         this.screenWidth = screenWidth;
         this.enemyMaximumYPosition = screenHeight - SCREEN_HEIGHT_ADJUSTMENT;
-        this.levelView = instantiateLevelView();
+        
         this.currentNumberOfEnemies = 0;
-        initializeTimeline();
         friendlyUnits.add(user);
-        
+
         pauseOverlay.setMouseTransparent(true);
-        
+
         hitEffect = new RedScreenEffect(screenWidth, screenHeight, overlayGroup);
+
+        this.pauseManager = new PauseManager(gameLoopManager, root, pauseOverlay, levelView);
+
+        this.backgroundManager = new BackgroundManager(
+            backgroundImageName, screenHeight, screenWidth, root, user,
+            this::fireProjectile, this::togglePause, this::restartGame
+        );
+
+        this.actorManager = new ActorManager(root);
+
+        this.collisionManager = new CollisionManager(hitEffect, user);
+        
+        this.projectileManager = new LevelProjectileManager(
+        	    sceneManager.getRoot(),
+        	    new ArrayList<>(),
+        	    new ArrayList<>()
+        	);
+
     }
     
     /**
@@ -199,12 +187,11 @@ public abstract class LevelParent {
      * @return the initialized scene.
      */
     public Scene initializeScene() {
-        initializeBackground();
         initializeFriendlyUnits();
         levelView.showHeartDisplay();
-        root.getChildren().add(levelView.getInstructionText());
+        sceneManager.getRoot().getChildren().add(levelView.getInstructionText());
         levelView.getInstructionText().toFront();
-        return scene;
+        return sceneManager.getScene();
     }
     
     /**
@@ -212,7 +199,7 @@ public abstract class LevelParent {
      */
     public void startGame() {
         background.requestFocus();
-        timeline.play();
+    	gameLoopManager.start();
     }
     
     /**
@@ -221,7 +208,7 @@ public abstract class LevelParent {
      * @param callback the callback function to be executed.
      */
     public void setOnLevelChange(Consumer<String> callback) {
-        this.levelChangeCallback = callback;
+    	levelTransitionManager.setOnLevelChange(callback);
     }
     
     /**
@@ -230,28 +217,7 @@ public abstract class LevelParent {
      * @param levelName the name of the next level.
      */
     protected void goToNextLevel(String levelName) {
-        if (levelChangeCallback != null) {
-            // Stop game updates
-            timeline.stop();
-
-            // Display "Level Cleared" message
-            Text levelClearedText = new Text("Level Cleared!");
-            levelClearedText.setFont(Font.font("Monospaced", FontWeight.BOLD,100));
-            levelClearedText.setFill(Color.RED);
-            levelClearedText.setEffect(new DropShadow(5, Color.BLACK));
-            levelClearedText.setX(screenWidth / 2 - 420); // Center horizontally
-            levelClearedText.setY(screenHeight / 2);      // Center vertically
-
-            root.getChildren().add(levelClearedText);
-
-            // Delay before transitioning
-            PauseTransition pause = new PauseTransition(Duration.seconds(2));
-            pause.setOnFinished(event -> {
-                root.getChildren().remove(levelClearedText); // Clean up the message
-                levelChangeCallback.accept(levelName);
-            });
-            pause.play();
-        }
+    	levelTransitionManager.goToNextLevel(levelName);
     }
     
     /**
@@ -272,44 +238,6 @@ public abstract class LevelParent {
         updateLevelView();
         checkIfGameOver();
     }
-    
-    /**
-     * Initializes the game timeline that drives the game loop.
-     * The timeline executes the `updateScene` method at regular intervals.
-     */
-    private void initializeTimeline() {
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        KeyFrame gameLoop = new KeyFrame(Duration.millis(MILLISECOND_DELAY), e -> updateScene());
-        timeline.getKeyFrames().add(gameLoop);
-    }
-
-    /**
-     * Sets up the background image for the level and initializes key event handlers.
-     * The handlers respond to user inputs such as moving the player, firing projectiles, and pausing or restarting the game.
-     */
-    private void initializeBackground() {
-        background.setFocusTraversable(true);
-        background.setFitHeight(screenHeight);
-        background.setFitWidth(screenWidth);
-        background.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent e) {
-                KeyCode kc = e.getCode();
-                if (kc == KeyCode.UP) user.moveUp();
-                if (kc == KeyCode.DOWN) user.moveDown();
-                if (kc == KeyCode.SPACE) fireProjectile();
-                if (kc == KeyCode.P) togglePause(); // Pause the game
-                if (kc == KeyCode.R) restartGame(); // Restart the game
-            }
-        });
-
-        background.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent e) {
-                KeyCode kc = e.getCode();
-                if (kc == KeyCode.UP || kc == KeyCode.DOWN) user.stop();
-            }
-        });
-        root.getChildren().add(background);
-    }
 
     /**
      * Restarts the game by invoking the restart logic in the controller.
@@ -329,8 +257,7 @@ public abstract class LevelParent {
      */
     private void fireProjectile() {
         ActiveActorDestructible projectile = user.fireProjectile();
-        root.getChildren().add(projectile);
-        userProjectiles.add(projectile);
+        projectileManager.addUserProjectile(projectile);
     }
 
     /**
@@ -338,30 +265,19 @@ public abstract class LevelParent {
      * Each enemy may fire a projectile based on its behavior.
      */
     private void generateEnemyFire() {
-        enemyUnits.forEach(enemy -> spawnEnemyProjectile(((FighterPlane) enemy).fireProjectile()));
-    }
-
-    /**
-     * Spawns a projectile for an enemy unit.
-     * Adds the projectile to the scene graph and tracks it in the enemy projectiles list.
-     *
-     * @param projectile the projectile to spawn.
-     */
-    private void spawnEnemyProjectile(ActiveActorDestructible projectile) {
-        if (projectile != null) {
-            root.getChildren().add(projectile);
-            enemyProjectiles.add(projectile);
-        }
+        enemyUnits.forEach(enemy -> {
+            ActiveActorDestructible projectile = ((FighterPlane) enemy).fireProjectile();
+            projectileManager.addEnemyProjectile(projectile);
+        });
     }
 
     /**
      * Updates all active actors in the scene, including friendly units, enemies, and projectiles.
      */
     private void updateActors() {
-        friendlyUnits.forEach(plane -> plane.updateActor());
-        enemyUnits.forEach(enemy -> enemy.updateActor());
-        userProjectiles.forEach(projectile -> projectile.updateActor());
-        enemyProjectiles.forEach(projectile -> projectile.updateActor());
+    	actorManager.updateActors(friendlyUnits);
+        actorManager.updateActors(enemyUnits);
+        projectileManager.updateProjectiles();
     }
 
     /**
@@ -369,23 +285,9 @@ public abstract class LevelParent {
      * This method ensures the scene graph and actor lists are consistent with the game state.
      */
     private void removeAllDestroyedActors() {
-        removeDestroyedActors(friendlyUnits);
-        removeDestroyedActors(enemyUnits);
-        removeDestroyedActors(userProjectiles);
-        removeDestroyedActors(enemyProjectiles);
-    }
-    
-    /**
-     * Removes destroyed actors from a given list and the scene graph.
-     *
-     * @param actors the list of actors to check for destruction.
-     */
-    private void removeDestroyedActors(List<ActiveActorDestructible> actors) {
-        List<ActiveActorDestructible> destroyedActors = actors.stream()
-                .filter(ActiveActorDestructible::isDestroyed)
-                .collect(Collectors.toList());
-        root.getChildren().removeAll(destroyedActors);
-        actors.removeAll(destroyedActors);
+    	actorManager.removeDestroyedActors(friendlyUnits);
+    	enemyManager.removeDestroyedEnemies();
+    	projectileManager.removeDestroyedProjectiles();
     }
     
     /**
@@ -393,7 +295,7 @@ public abstract class LevelParent {
      * Each collision results in both entities taking damage.
      */
     private void handlePlaneCollisions() {
-        handleCollisions(friendlyUnits, enemyUnits);
+    	collisionManager.handlePlaneCollisions(friendlyUnits, enemyUnits);
     }
     
     /**
@@ -401,7 +303,10 @@ public abstract class LevelParent {
      * Damaged entities are appropriately updated.
      */
     private void handleUserProjectileCollisions() {
-        handleCollisions(userProjectiles, enemyUnits);
+    	collisionManager.handleUserProjectileCollisions(
+    	        projectileManager.getUserProjectiles(),
+    	        enemyUnits
+    	    );
     }
 
     /**
@@ -409,43 +314,10 @@ public abstract class LevelParent {
      * Includes special handling for health projectiles that heal the user.
      */
     private void handleEnemyProjectileCollisions() {
-        for (ActiveActorDestructible projectile : enemyProjectiles) {
-            for (ActiveActorDestructible friendlyUnit : friendlyUnits) {
-                if (projectile instanceof HealthProjectile &&
-                    projectile.getPreciseBounds().intersects(friendlyUnit.getPreciseBounds())) {
-                    // Increase health and destroy the projectile
-                    getUser().increaseHealth();
-                    projectile.destroy();
-                    continue;
-                }
-                if (projectile.getPreciseBounds().intersects(friendlyUnit.getPreciseBounds())) {
-                    projectile.takeDamage();
-                    friendlyUnit.takeDamage();
-                    hitEffect.trigger();
-                }
-            }
-        }
-    }
-
-    /**
-     * Handles collisions between two lists of actors.
-     * Any collision results in both actors taking damage, with special handling for user plane collisions.
-     *
-     * @param actors1 the first list of actors.
-     * @param actors2 the second list of actors.
-     */
-    private void handleCollisions(List<ActiveActorDestructible> actors1, List<ActiveActorDestructible> actors2) {
-        for (ActiveActorDestructible actor : actors2) {
-            for (ActiveActorDestructible otherActor : actors1) {
-                if (actor.getPreciseBounds().intersects(otherActor.getPreciseBounds())) {
-                    actor.takeDamage();
-                    otherActor.takeDamage();
-                    if (otherActor instanceof UserPlane || actor instanceof UserPlane) {
-                        hitEffect.trigger(); 
-                    }
-                }
-            }
-        }
+    	collisionManager.handleEnemyProjectileCollisions(
+    	        projectileManager.getEnemyProjectiles(),
+    	        friendlyUnits
+    	    );
     }
 
     /**
@@ -454,7 +326,7 @@ public abstract class LevelParent {
      */
     private void handleEnemyPenetration() {
         for (ActiveActorDestructible enemy : enemyUnits) {
-            if (enemyHasPenetratedDefenses(enemy)) {
+        	if (enemyManager.hasPenetratedDefenses(enemy)) {
                 user.takeDamage();
                 hitEffect.trigger();
                 enemy.destroy();
@@ -497,20 +369,10 @@ public abstract class LevelParent {
     }
     
     /**
-     * Determines if an enemy unit has penetrated the user's defenses by checking its X position.
-     *
-     * @param enemy the enemy unit to check.
-     * @return true if the enemy has penetrated defenses, false otherwise.
-     */
-    private boolean enemyHasPenetratedDefenses(ActiveActorDestructible enemy) {
-        return Math.abs(enemy.getTranslateX()) > screenWidth;
-    }
-    
-    /**
      * Ends the game with a win condition.
      */
     protected void winGame() {
-        timeline.stop();
+    	gameLoopManager.stop();
         levelView.showWinImage();
     }
     
@@ -518,7 +380,7 @@ public abstract class LevelParent {
      * Ends the game with a lose condition.
      */
     protected void loseGame() {
-        timeline.stop();
+    	gameLoopManager.stop();
         levelView.showGameOverImage();
     }
 
@@ -537,7 +399,7 @@ public abstract class LevelParent {
      * @return the root node.
      */
     protected Group getRoot() {
-        return root;
+    	return sceneManager.getRoot();
     }
 
     /**
@@ -555,8 +417,7 @@ public abstract class LevelParent {
      * @param enemy the enemy unit to add.
      */
     protected void addEnemyUnit(ActiveActorDestructible enemy) {
-        enemyUnits.add(enemy);
-        root.getChildren().add(enemy);
+    	enemyManager.spawnEnemy(enemy);
     }
 
     /**
@@ -592,32 +453,14 @@ public abstract class LevelParent {
      * number of active enemies in the scene.
      */
     private void updateNumberOfEnemies() {
-        currentNumberOfEnemies = enemyUnits.size();
+    	currentNumberOfEnemies = enemyManager.getCurrentNumberOfEnemies();
     }
-    
-    /**
-     * Indicates whether the game is currently paused.
-     */
-    private boolean isPaused = false;
     
     /**
      * Toggles the pause state of the game.
      */
     public void togglePause() {
-        isPaused = !isPaused;
-        if (isPaused) {
-            timeline.pause();
-            levelView.showPauseText();
-            root.setEffect(blurEffect);
-            pauseOverlay.getChildren().add(levelView.getPauseText());
-            pauseOverlay.getChildren().add(levelView.getMainMenuButton());
-            pauseOverlay.setMouseTransparent(false);
-        } else {
-            timeline.play();
-            levelView.hidePauseText();
-            root.setEffect(null);
-            pauseOverlay.getChildren().clear();
-        }
+    	pauseManager.togglePause();
     }
 
     /**
@@ -626,7 +469,7 @@ public abstract class LevelParent {
      * @return true if the game is paused, false otherwise.
      */
     public boolean isPaused() {
-        return isPaused;
+        return pauseManager.isPaused();
     }
     
     /**

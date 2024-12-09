@@ -43,7 +43,6 @@ public class LevelTwo extends LevelParent {
      */
     public LevelTwo(double screenHeight, double screenWidth, Controller controller) {
         super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH, controller);
-        levelView.showShield();
         double levelThreeShieldProbability = 0.002;
         boss = new Boss(levelView, levelThreeShieldProbability);
     }
