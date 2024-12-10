@@ -33,6 +33,8 @@ public class LevelTwo extends LevelParent {
      * The view associated with Level 2.
      */
     private LevelViewLevelTwo levelView;
+    
+    private final GameOverHandler gameOverHandler = new GameOverHandler();
 
     /**
      * Constructs a new LevelTwo instance with the specified dimensions and controller.
@@ -62,11 +64,13 @@ public class LevelTwo extends LevelParent {
      */
     @Override
     protected void checkIfGameOver() {
-        if (userIsDestroyed()) {
-            loseGame();
-        } else if (boss.isDestroyed()) {
-            goToNextLevel(NEXT_LEVEL);
-        }
+        gameOverHandler.handleGameOver(
+            this,
+            userIsDestroyed(),
+            boss.isDestroyed(),
+            NEXT_LEVEL,
+            null
+        );
     }
 
     /**

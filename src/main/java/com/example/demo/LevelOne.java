@@ -38,6 +38,8 @@ public class LevelOne extends LevelParent {
      * The initial health of the player at the start of this level.
      */
     private static final int PLAYER_INITIAL_HEALTH = 5;
+    
+    private final GameOverHandler gameOverHandler = new GameOverHandler();
 
     /**
      * Constructs a new {@code LevelOne} instance with specified screen dimensions
@@ -57,11 +59,13 @@ public class LevelOne extends LevelParent {
      */
     @Override
     protected void checkIfGameOver() {
-        if (userIsDestroyed()) {
-            loseGame();
-        } else if (userHasReachedKillTarget()) {
-            goToNextLevel(NEXT_LEVEL);
-        }
+        gameOverHandler.handleGameOver(
+            this,
+            userIsDestroyed(),
+            userHasReachedKillTarget(),
+            NEXT_LEVEL,
+            null
+        );
     }
 
     /**

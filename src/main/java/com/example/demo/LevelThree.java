@@ -38,6 +38,8 @@ public class LevelThree extends LevelParent {
      * The view associated with Level 3.
      */
     private LevelViewLevelThree levelView;
+    
+    private final GameOverHandler gameOverHandler = new GameOverHandler();
 
     /**
      * Constructs a new LevelThree instance with the specified dimensions and controller.
@@ -77,11 +79,13 @@ public class LevelThree extends LevelParent {
      */
     @Override
     protected void checkIfGameOver() {
-        if (userIsDestroyed()) {
-            loseGame();
-        } else if (boss.isDestroyed() && getUser().getNumberOfKills() >= TOTAL_ENEMIES) {
-            winGame();
-        }
+        gameOverHandler.handleGameOver(
+            this,
+            userIsDestroyed(),
+            boss.isDestroyed() && getUser().getNumberOfKills() >= TOTAL_ENEMIES,
+            null,
+            this::winGame
+        );
     }
 
     /**
