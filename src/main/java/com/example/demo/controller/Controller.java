@@ -4,9 +4,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import com.example.demo.LevelParent;
-import com.example.demo.MainMenu;
-import com.example.demo.TransitionScreen;
+
+import com.example.demo.levels.LevelParent;
+import com.example.demo.visuals.MainMenu;
+import com.example.demo.visuals.TransitionScreen;
 
 import java.lang.reflect.Constructor;
 
@@ -21,7 +22,7 @@ import javafx.util.Duration;
  */
 public class Controller {
 
-    private static final String LEVEL_ONE_CLASS_NAME = "com.example.demo.LevelOne"; // Default first level
+    private static final String LEVEL_ONE_CLASS_NAME = "com.example.demo.levels.LevelOne"; // Default first level
     private final Stage stage; // The primary stage for displaying scenes
     private MainMenu mainMenu; // The main menu instance
     private boolean isPaused = false; // Tracks whether the game is paused
@@ -105,9 +106,9 @@ public class Controller {
      */
     private void goToLevelWithTransition(String className) {
         String levelText = "Level 1"; // Default to Level 1
-        if (className.equals("com.example.demo.LevelTwo")) {
+        if (className.equals("com.example.demo.levels.LevelTwo")) {
             levelText = "Level 2";
-        } else if (className.equals("com.example.demo.LevelThree")) {
+        } else if (className.equals("com.example.demo.levels.LevelThree")) {
             levelText = "Level 3";
         }
 
@@ -158,7 +159,7 @@ public class Controller {
             } else {
                 // Default to Level One
                 try {
-                    goToLevelWithTransition("com.example.demo.LevelOne");
+                    goToLevelWithTransition("com.example.demo.levels.LevelOne");
                 } catch (Exception e) {
                     System.err.println("Failed to reset to LevelOne: " + e.getMessage());
                     showError(e);
