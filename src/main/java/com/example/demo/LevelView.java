@@ -4,7 +4,6 @@ import javafx.scene.Group;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Button;
 
@@ -66,11 +65,6 @@ public class LevelView {
     private final HeartDisplay heartDisplay;
 
     /**
-     * Text displayed when the game is paused.
-     */
-    private final Text pauseText;
-
-    /**
      * Text displaying the remaining kills needed to complete the level.
      */
     protected final Text killsRemainingText;
@@ -81,6 +75,8 @@ public class LevelView {
      * Instruction text for controlling the game.
      */
     private final Text instructionText;
+    
+    private final PauseTextManager pauseTextManager;
 
     /**
      * Constructs a new LevelView instance.
@@ -90,24 +86,13 @@ public class LevelView {
      */
     public LevelView(Group root, int heartsToDisplay) {
         this.root = root;
-
-        // Initialize pause text
-        pauseText = new Text("Game Paused!");
-        pauseText.setFont(Font.font("Monospaced", FontWeight.BOLD, 80));
-        pauseText.setFill(Color.WHITE);
-        DropShadow shadow = new DropShadow();
-        shadow.setColor(Color.BLACK);
-        shadow.setRadius(10);
-        shadow.setOffsetX(3);
-        shadow.setOffsetY(3);
-        pauseText.setEffect(shadow);
-        updatePauseTextPosition();
-        pauseText.setVisible(false);
-        root.getChildren().add(pauseText);
-
+        
+     // Initialize pause text manager
+        this.pauseTextManager = new PauseTextManager(root);
+       
         // Initialize heart display
         this.heartDisplay = new HeartDisplay(HEART_DISPLAY_X_POSITION, HEART_DISPLAY_Y_POSITION, heartsToDisplay);
-
+        
         // Initialize win and game over images
         this.winImage = new WinImage(WIN_IMAGE_X_POSITION, WIN_IMAGE_Y_POSITION);
         double windowWidth = root.getScene().getWidth();
@@ -183,20 +168,10 @@ public class LevelView {
     }
 
     /**
-     * Updates the position of the pause text based on the screen size.
-     */
-    public void updatePauseTextPosition() {
-        pauseText.setX(360);
-        pauseText.setY(350);
-    }
-
-    /**
      * Shows the pause text and brings it to the front.
      */
     public void showPauseText() {
-        updatePauseTextPosition();
-        pauseText.setVisible(true);
-        pauseText.toFront();
+    	pauseTextManager.showPauseText();
         mainMenuButtonManager.show();
     }
 
@@ -204,7 +179,7 @@ public class LevelView {
      * Hides the pause text.
      */
     public void hidePauseText() {
-        pauseText.setVisible(false);
+    	 pauseTextManager.hidePauseText();
 
         // Do not hide the button if game-over might occur later
         if (!root.getChildren().contains(gameOverImage) || !gameOverImage.isVisible()) {
@@ -218,7 +193,7 @@ public class LevelView {
      * @return the pause text node.
      */
     public Text getPauseText() {
-        return pauseText;
+    	 return pauseTextManager.getPauseText();
     }
 
     /**
