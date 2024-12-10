@@ -7,7 +7,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Button;
-import com.example.demo.controller.Controller;
 
 /**
  * Represents the visual components and user interface for a game level.
@@ -76,10 +75,7 @@ public class LevelView {
      */
     protected final Text killsRemainingText;
 
-    /**
-     * Button to return to the main menu.
-     */
-    private Button mainMenuButton;
+    private final MainMenuButtonManager mainMenuButtonManager;
 
     /**
      * Instruction text for controlling the game.
@@ -135,7 +131,7 @@ public class LevelView {
         killsRemainingText.toFront();
 
         // Create main menu button
-        createMainMenuButton();
+        this.mainMenuButtonManager = new MainMenuButtonManager(root);
 
         // Initialize instruction text
         instructionText = new Text("R: Restart | P: Pause");
@@ -158,23 +154,20 @@ public class LevelView {
     public void showWinImage() {
         root.getChildren().add(winImage);
         winImage.showWinImage();
-        if (!root.getChildren().contains(mainMenuButton)) {
-            root.getChildren().add(mainMenuButton);
-        }
-        mainMenuButton.setVisible(true);
-        mainMenuButton.toFront();
+        mainMenuButtonManager.show();
     }
 
     /**
      * Displays the game over image and enables the main menu button.
      */
     public void showGameOverImage() {
-        root.getChildren().add(gameOverImage);
-        if (!root.getChildren().contains(mainMenuButton)) {
-            root.getChildren().add(mainMenuButton);
+        if (!root.getChildren().contains(gameOverImage)) {
+            root.getChildren().add(gameOverImage);
         }
-        mainMenuButton.setVisible(true);
-        mainMenuButton.toFront();
+        gameOverImage.toFront();
+
+        // Explicitly reset button visibility
+        mainMenuButtonManager.show();
     }
 
     /**
@@ -204,8 +197,7 @@ public class LevelView {
         updatePauseTextPosition();
         pauseText.setVisible(true);
         pauseText.toFront();
-        mainMenuButton.setVisible(true);
-        mainMenuButton.toFront();
+        mainMenuButtonManager.show();
     }
 
     /**
@@ -213,7 +205,11 @@ public class LevelView {
      */
     public void hidePauseText() {
         pauseText.setVisible(false);
-        mainMenuButton.setVisible(false);
+
+        // Do not hide the button if game-over might occur later
+        if (!root.getChildren().contains(gameOverImage) || !gameOverImage.isVisible()) {
+            mainMenuButtonManager.hide();
+        }
     }
 
     /**
@@ -245,77 +241,12 @@ public class LevelView {
     }
 
     /**
-     * Creates and configures the main menu button.
-     */
-    private void createMainMenuButton() {
-        mainMenuButton = new Button("Main Menu");
-
-        double windowWidth = root.getScene().getWidth();
-        double windowHeight = root.getScene().getHeight();
-
-        double buttonWidth = 200;
-        double buttonHeight = 50;
-
-        mainMenuButton.setLayoutX((windowWidth - buttonWidth) / 2);
-        mainMenuButton.setLayoutY(windowHeight - 200);
-        mainMenuButton.setPrefWidth(buttonWidth);
-        mainMenuButton.setPrefHeight(buttonHeight);
-
-        mainMenuButton.setStyle(
-            "-fx-background-color: #FF4444; " +
-            "-fx-text-fill: white; " +
-            "-fx-font-size: 16px; " +
-            "-fx-font-weight: bold; " +
-            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 2); " +
-            "-fx-cursor: hand; " +
-            "-fx-transition: all 0.3s ease;"
-        );
-
-        mainMenuButton.setOnMouseEntered(e -> {
-            mainMenuButton.setStyle(
-                "-fx-background-color: #FF6666; " +
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 16px; " +
-                "-fx-font-weight: bold; " +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 8, 0, 0, 3); " +
-                "-fx-cursor: hand; " +
-                "-fx-scale-x: 1.1; " +
-                "-fx-scale-y: 1.1; " +
-                "-fx-transition: all 0.3s ease;"
-            );
-        });
-
-        mainMenuButton.setOnMouseExited(e -> {
-            mainMenuButton.setStyle(
-                "-fx-background-color: #FF4444; " +
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 16px; " +
-                "-fx-font-weight: bold; " +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0, 0, 2); " +
-                "-fx-cursor: hand; " +
-                "-fx-scale-x: 1.0; " +
-                "-fx-scale-y: 1.0; " +
-                "-fx-transition: all 0.3s ease;"
-            );
-        });
-
-        mainMenuButton.setOnAction(event -> {
-            javafx.stage.Stage stage = (javafx.stage.Stage) mainMenuButton.getScene().getWindow();
-            Controller controller = new Controller(stage);
-            controller.launchGame();
-        });
-
-        mainMenuButton.setVisible(false);
-        root.getChildren().add(mainMenuButton);
-    }
-
-    /**
      * Returns the main menu button.
      *
      * @return the main menu button.
      */
     public Button getMainMenuButton() {
-        return mainMenuButton;
+    	return mainMenuButtonManager.getMainMenuButton();
     }
 
     /**
