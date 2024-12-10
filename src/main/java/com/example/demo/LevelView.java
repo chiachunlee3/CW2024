@@ -70,13 +70,10 @@ public class LevelView {
     protected final Text killsRemainingText;
 
     private final MainMenuButtonManager mainMenuButtonManager;
-
-    /**
-     * Instruction text for controlling the game.
-     */
-    private final Text instructionText;
     
     private final PauseTextManager pauseTextManager;
+    
+    private final InstructionTextManager instructionTextManager;
 
     /**
      * Constructs a new LevelView instance.
@@ -118,12 +115,7 @@ public class LevelView {
         // Create main menu button
         this.mainMenuButtonManager = new MainMenuButtonManager(root);
 
-        // Initialize instruction text
-        instructionText = new Text("R: Restart | P: Pause");
-        instructionText.setFont(Font.font("Monospaced", FontWeight.BOLD, 18));
-        instructionText.setFill(Color.BLACK);
-        instructionText.setX(30);
-        instructionText.setY(700);
+        this.instructionTextManager = new InstructionTextManager(root);
     }
 
     /**
@@ -230,7 +222,7 @@ public class LevelView {
      * @return the instruction text node.
      */
     public Text getInstructionText() {
-        return instructionText;
+    	return instructionTextManager.getInstructionText();
     }
 
     /**
