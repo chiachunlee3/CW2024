@@ -86,8 +86,9 @@ public class LevelViewLevelTwo extends LevelView {
      */
     @Override
     public void updateKillsRemaining(int killsRemaining) {
-        killsRemainingText.setVisible(false);
+        killsRemainingTextManager.hideKillsRemainingText(); // Use the existing instance
     }
+
 
     /**
      * Updates the boss's health bar and text to reflect the current health percentage.

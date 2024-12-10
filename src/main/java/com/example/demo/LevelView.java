@@ -2,9 +2,6 @@ package com.example.demo;
 
 import javafx.scene.Group;
 import javafx.scene.text.Text;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.paint.Color;
 import javafx.scene.control.Button;
 
 /**
@@ -67,7 +64,7 @@ public class LevelView {
     /**
      * Text displaying the remaining kills needed to complete the level.
      */
-    protected final Text killsRemainingText;
+    protected final KillsRemainingTextManager killsRemainingTextManager;
 
     private final MainMenuButtonManager mainMenuButtonManager;
     
@@ -103,15 +100,8 @@ public class LevelView {
             GAME_OVER_IMAGE_HEIGHT
         );
 
-        // Initialize kills remaining text
-        killsRemainingText = new Text();
-        killsRemainingText.setFont(Font.font("Monospaced", FontWeight.BOLD, 20));
-        killsRemainingText.setFill(Color.WHITE);
-        killsRemainingText.setX(50);
-        killsRemainingText.setY(50);
-        root.getChildren().add(killsRemainingText);
-        killsRemainingText.toFront();
-
+        this.killsRemainingTextManager = new KillsRemainingTextManager(root);
+        
         // Create main menu button
         this.mainMenuButtonManager = new MainMenuButtonManager(root);
 
@@ -194,17 +184,7 @@ public class LevelView {
      * @param killsRemaining the number of kills remaining.
      */
     public void updateKillsRemaining(int killsRemaining) {
-        double padding = 20;
-        double textWidthMargin = 300;
-        double xPosition = 1300 - textWidthMargin - padding;
-        double yPosition = padding + 30;
-
-        killsRemainingText.setText("Kills Remaining: " + killsRemaining);
-        killsRemainingText.setX(xPosition);
-        killsRemainingText.setY(yPosition);
-
-        killsRemainingText.setVisible(true);
-        killsRemainingText.toFront();
+    	 killsRemainingTextManager.updateKillsRemaining(killsRemaining);
     }
 
     /**

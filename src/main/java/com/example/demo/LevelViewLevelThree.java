@@ -19,17 +19,4 @@ public class LevelViewLevelThree extends LevelViewLevelTwo {
         super(root, heartsToDisplay);
     }
 
-    /**
-     * Updates the display showing the remaining kills required for level three.
-     * Overrides the parent method to include level-specific modifications.
-     *
-     * @param killsRemaining the number of kills remaining.
-     */
-    @Override
-    public void updateKillsRemaining(int killsRemaining) {
-        super.updateKillsRemaining(killsRemaining);
-        killsRemainingText.setText("Kills Remaining for Enemies: " + killsRemaining);
-        killsRemainingText.setVisible(false);
-        killsRemainingText.toFront();
-    }
 }
