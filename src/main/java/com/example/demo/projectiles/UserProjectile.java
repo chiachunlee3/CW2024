@@ -7,9 +7,20 @@ package com.example.demo.projectiles;
  */
 public class UserProjectile extends Projectile {
 
-    private static final String IMAGE_NAME = "userfire.png"; // Image representing the projectile
-    private static final int IMAGE_HEIGHT = 125; // Height of the projectile image
-    private static final int HORIZONTAL_VELOCITY = 15; // Speed of the projectile's horizontal movement
+    /**
+     * The name of the image file representing the projectile.
+     */
+    private static final String IMAGE_NAME = "userfire.png";
+
+    /**
+     * The height of the projectile's image in pixels.
+     */
+    private static final int IMAGE_HEIGHT = 125;
+
+    /**
+     * The speed of the projectile's horizontal movement in units per update.
+     */
+    private static final int HORIZONTAL_VELOCITY = 15;
 
     /**
      * Constructs a {@code UserProjectile} object with the specified initial position.

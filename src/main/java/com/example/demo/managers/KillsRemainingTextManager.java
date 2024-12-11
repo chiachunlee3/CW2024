@@ -55,6 +55,9 @@ public class KillsRemainingTextManager {
         return killsRemainingText;
     }
     
+    /**
+     * Hides the kills remaining text.
+     */
     public void hideKillsRemainingText() {
         killsRemainingText.setVisible(false);
     }

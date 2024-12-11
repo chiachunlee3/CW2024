@@ -36,6 +36,10 @@ public class LevelTwo extends LevelParent {
      */
     private LevelViewLevelTwo levelView;
     
+    /**
+     * Handles game-over logic for Level 2, determining when the game ends
+     * or transitions to the next level.
+     */
     private final GameOverHandler gameOverHandler = new GameOverHandler();
 
     /**

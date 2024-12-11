@@ -27,10 +27,20 @@ import com.example.demo.states.PauseManager;
 import com.example.demo.visuals.RedScreenEffect;
 
 public abstract class LevelParent {
-	
+	 /**
+     * Manager for handling the pause state of the game.
+     * Controls pausing, resuming, and associated UI elements.
+     */
 	private final PauseManager pauseManager;
-
+	
+	/**
+     * Adjustment value for calculating screen height in certain operations.
+     */
     private static final double SCREEN_HEIGHT_ADJUSTMENT = 150;
+    
+    /**
+     * Delay interval in milliseconds for game loop updates.
+     */
     private static final int MILLISECOND_DELAY = 50;
     
     /**
@@ -93,21 +103,44 @@ public abstract class LevelParent {
      */
     private boolean isPaused = false;
     
-    //It's constructor adds the background image to the root node and sets up key event listeners.
+    /**
+     * Manages background image to the root node and sets up key event listeners.
+     */
     private final BackgroundManager backgroundManager;
     
+    /**
+     * Handles updates and lifecycle management for actors in the game.
+     */
     private final ActorManager actorManager;
     
+    /**
+     * Responsible for detecting and handling collisions between game entities.
+     */
     private final CollisionManager collisionManager;
     
+    /**
+     * Manages the main game loop, controlling updates and rendering at regular intervals.
+     */
     private final GameLoopManager gameLoopManager;
     
+    /**
+     * Handles the creation, management, and behavior of enemy units in the game.
+     */
     private final EnemyManager enemyManager;
     
+    /**
+     * Manages the game scene, including its graphical elements and structure.
+     */
     private final SceneManager sceneManager;
     
+    /**
+     * Manages the lifecycle of projectiles in the level, including their creation, updates, and removal.
+     */
     private final LevelProjectileManager projectileManager;
-
+    
+    /**
+     * Handles level transitions, including animations and state changes.
+     */
     private final LevelTransitionManager levelTransitionManager;
 
     /**

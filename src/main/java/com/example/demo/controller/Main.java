@@ -11,10 +11,25 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    private static final int SCREEN_WIDTH = 1300; // Width of the application window
-    private static final int SCREEN_HEIGHT = 750; // Height of the application window
-    private static final String TITLE = "Sky Battle"; // Title of the application window
-    private Controller myController; // Game controller for managing the game flow
+    /**
+     * The width of the application window in pixels.
+     */
+    private static final int SCREEN_WIDTH = 1300;
+
+    /**
+     * The height of the application window in pixels.
+     */
+    private static final int SCREEN_HEIGHT = 750;
+
+    /**
+     * The title of the application window.
+     */
+    private static final String TITLE = "Sky Battle";
+
+    /**
+     * The game controller responsible for managing the game flow.
+     */
+    private Controller myController;
 
     /**
      * The main entry point for the JavaFX application.

@@ -43,6 +43,10 @@ public class LevelThree extends LevelParent {
      */
     private LevelViewLevelThree levelView;
     
+    /**
+     * Handles the game-over logic for Level 3, determining whether the player
+     * wins or loses based on the game's state.
+     */
     private final GameOverHandler gameOverHandler = new GameOverHandler();
 
     /**

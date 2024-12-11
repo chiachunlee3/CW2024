@@ -9,17 +9,37 @@ import com.example.demo.visuals.RedScreenEffect;
 
 import javafx.scene.Group;
 
+/**
+ * Manager class for handling various actor-related operations such as updating,
+ * removing, and managing collisions of actors.
+ */
 public class ActorManager {
     private final Group root;
 
+    /**
+     * Constructs an ActorManager with the specified root group.
+     *
+     * @param root the root group that contains the visual elements of the actors
+     */
     public ActorManager(Group root) {
         this.root = root;
     }
 
+    /**
+     * Updates the state of all actors in the provided list.
+     *
+     * @param actors the list of actors to update
+     */
     public void updateActors(List<ActiveActorDestructible> actors) {
         actors.forEach(ActiveActorDestructible::updateActor);
     }
 
+    /**
+     * Removes destroyed actors from the provided list and from the root group's
+     * children.
+     *
+     * @param actors the list of actors to check and remove if destroyed
+     */
     public void removeDestroyedActors(List<ActiveActorDestructible> actors) {
         List<ActiveActorDestructible> destroyedActors = actors.stream()
                 .filter(ActiveActorDestructible::isDestroyed)
@@ -28,6 +48,16 @@ public class ActorManager {
         actors.removeAll(destroyedActors);
     }
 
+    /**
+     * Handles collisions between two lists of actors. If a collision is detected,
+     * actors take damage, and if a user plane is involved in the collision, a
+     * red screen effect is triggered.
+     *
+     * @param actors1   the first list of actors to check for collisions
+     * @param actors2   the second list of actors to check for collisions
+     * @param hitEffect the visual effect triggered on collision
+     * @param user      the user plane involved in potential collisions
+     */
     public void handleCollisions(
         List<ActiveActorDestructible> actors1, 
         List<ActiveActorDestructible> actors2, 

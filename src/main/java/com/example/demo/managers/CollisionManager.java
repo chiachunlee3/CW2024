@@ -7,15 +7,31 @@ import com.example.demo.actors.UserPlane;
 import com.example.demo.projectiles.HealthProjectile;
 import com.example.demo.visuals.RedScreenEffect;
 
+/**
+ * Manages collision detection and handling between various game entities
+ * such as user planes, friendly units, enemy units, and projectiles.
+ */
 public class CollisionManager {
     private final RedScreenEffect hitEffect;
     private final UserPlane user;
 
+    /**
+     * Constructs a CollisionManager with the specified hit effect and user plane.
+     *
+     * @param hitEffect the visual effect triggered upon a hit
+     * @param user the user's plane
+     */
     public CollisionManager(RedScreenEffect hitEffect, UserPlane user) {
         this.hitEffect = hitEffect;
         this.user = user;
     }
 
+    /**
+     * Handles collisions between friendly units and enemy units.
+     *
+     * @param friendlyUnits the list of friendly units
+     * @param enemyUnits the list of enemy units
+     */
     public void handlePlaneCollisions(List<ActiveActorDestructible> friendlyUnits, List<ActiveActorDestructible> enemyUnits) {
         for (ActiveActorDestructible friendly : friendlyUnits) {
             for (ActiveActorDestructible enemy : enemyUnits) {
@@ -32,6 +48,12 @@ public class CollisionManager {
         }
     }
 
+    /**
+     * Handles collisions between user projectiles and enemy units.
+     *
+     * @param userProjectiles the list of user projectiles
+     * @param enemyUnits the list of enemy units
+     */
     public void handleUserProjectileCollisions(List<ActiveActorDestructible> userProjectiles, List<ActiveActorDestructible> enemyUnits) {
         for (ActiveActorDestructible projectile : userProjectiles) {
             for (ActiveActorDestructible enemy : enemyUnits) {
@@ -44,6 +66,12 @@ public class CollisionManager {
         }
     }
 
+    /**
+     * Handles collisions between enemy projectiles and friendly units.
+     *
+     * @param enemyProjectiles the list of enemy projectiles
+     * @param friendlyUnits the list of friendly units
+     */
     public void handleEnemyProjectileCollisions(List<ActiveActorDestructible> enemyProjectiles, List<ActiveActorDestructible> friendlyUnits) {
         for (ActiveActorDestructible projectile : enemyProjectiles) {
             for (ActiveActorDestructible friendly : friendlyUnits) {

@@ -18,8 +18,13 @@ public class BoundsHandler {
      *
      * @param imageView the {@link ImageView} for which the bounds need to be calculated.
      * @return a {@link Bounds} object representing the adjusted bounding box.
+     * @throws NullPointerException if the provided {@code imageView} is {@code null}.
      */
     public static Bounds getPreciseBounds(ImageView imageView) {
+        if (imageView == null) {
+            throw new NullPointerException("ImageView cannot be null.");
+        }
+
         Bounds bounds = imageView.getBoundsInParent();
         double verticalReduction = 0.8;
         double heightReduction = bounds.getHeight() * verticalReduction;

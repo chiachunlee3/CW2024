@@ -11,14 +11,39 @@ import javafx.scene.text.Text;
  * Manages the boss health display, including the health bar and health text.
  */
 public class BossHealthManager {
+	/**
+     * The width of the health bar.
+     */
+    private static final int HEALTH_BAR_WIDTH = 300;
 
-    private static final int HEALTH_BAR_WIDTH = 300; // Width of the health bar
-    private static final int HEALTH_BAR_HEIGHT = 20; // Height of the health bar
-    private static final int HEALTH_BAR_X_POSITION = 950; // X-coordinate for the health bar
-    private static final int HEALTH_BAR_Y_POSITION = 70; // Y-coordinate for the health bar
+    /**
+     * The height of the health bar.
+     */
+    private static final int HEALTH_BAR_HEIGHT = 20;
 
+    /**
+     * The X-coordinate for the health bar.
+     */
+    private static final int HEALTH_BAR_X_POSITION = 950;
+
+    /**
+     * The Y-coordinate for the health bar.
+     */
+    private static final int HEALTH_BAR_Y_POSITION = 70;
+
+    /**
+     * The text element displaying the boss's health status.
+     */
     private final Text bossHealthText;
+
+    /**
+     * The rectangle representing the boss's current health bar.
+     */
     private final Rectangle healthBar;
+
+    /**
+     * The rectangle representing the background of the health bar.
+     */
     private final Rectangle healthBarBackground;
 
     /**

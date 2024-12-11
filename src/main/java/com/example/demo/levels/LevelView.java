@@ -74,10 +74,19 @@ public class LevelView {
      */
     protected final KillsRemainingTextManager killsRemainingTextManager;
 
+    /**
+     * Manager for handling the main menu button.
+     */
     private final MainMenuButtonManager mainMenuButtonManager;
     
+    /**
+     * Manager for handling the pause text.
+     */
     private final PauseTextManager pauseTextManager;
     
+    /**
+     * Manager for handling the instructional text display.
+     */
     private final InstructionTextManager instructionTextManager;
 
     /**
